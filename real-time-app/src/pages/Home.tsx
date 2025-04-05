@@ -1,6 +1,6 @@
 import './styles/Home.css'
 import Textbox from '../components/textbox';
-import Outputbox from '../components/outputBox';
+import Outputbox from '../components/outputbox';
 
 function Home() {
   return (
