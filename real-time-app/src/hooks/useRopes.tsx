@@ -4,7 +4,7 @@ import RopeSequence from 'rope-sequence';
 // Define types that the rope can do
 type RopeOperation ={ type: 'insert'; pos: number; value: string } | { type: 'delete'; from: number; to: number };
 
-export function useRopes(socket: WebSocket | null) {
+export function useRopes(socket: WebSocket | null): [string, (newText:string) => void] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>);
   const [text, setText] = useState('');
 
