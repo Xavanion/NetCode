@@ -9,7 +9,7 @@ import './App.css'
 
 
 function App() {
-  const socket = useWS();
+  useWS();
 
 
   return (
