@@ -4,24 +4,23 @@ export const useWS = () => {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/api/ws");
-    socketRef.current = socket;
+    socketRef.current = new WebSocket("ws://localhost:8080/api/ws");
 
-    socket.onopen = () => {
+    socketRef.current.onopen = () => {
       console.log("Connected");
-      socket.send("Hello server!");
+      socketRef.current?.send("Hello server!");
     };
 
-    socket.onmessage = (event) => {
+    socketRef.current.onmessage = (event) => {
       console.log("Received:", event.data);
     };
 
-    socket.onclose = () => {
+    socketRef.current.onclose = () => {
       console.log("Disconnected");
     };
 
     return () => {
-      socket.close();
+      socketRef.current?.close();
     };
   }, []);
 
