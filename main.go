@@ -2,11 +2,11 @@ package main
 
 import (
 	"net/http"
-
-	roomhandler "github.com/Xavanion/Hack-KU-2025/backend/room-handling"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+
+	roomhandler "github.com/Xavanion/Hack-KU-2025/backend/room-handling"
 )
 
 // Upgrade HTTP request to WS connection
@@ -19,8 +19,8 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	router := gin.Default()
 	roomhandler.Testing()
+	router := gin.Default()
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
 
