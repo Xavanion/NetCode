@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path"
+
 	"github.com/gorilla/mux"
 )
 
@@ -65,19 +67,7 @@ func main() {
 	router := mux.NewRouter()
 	//router.HandleFunc("/users", getUsers).Methods("GET")
 	//router.HandleFunc("/users", createUser).Methods("POST")
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    switch r.URL.Path {
-		case "/", "/index", "/home.js":
-			handleHTTP(w, r);
-		case "/about", "/info":
-			break
-		default:
-			http.NotFound(w, r)
-    }
-})
+	router.HandleFunc("/", handleHTTP)
 
-	err := http.ListenAndServe(":8080", router)
-	if(err != nil){
-		fmt.Println("Error starting server:",err)
-	}
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
