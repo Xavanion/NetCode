@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/Xavanion/Hack-KU-2025/backend/room-handling"
 )
 
 var upgrader = websocket.Upgrader{
@@ -18,7 +19,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	router := gin.Default()
-
+	roomhandling.Testing()
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
 
