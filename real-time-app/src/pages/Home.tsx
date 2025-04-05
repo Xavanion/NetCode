@@ -1,13 +1,17 @@
-import './styles/Home.css'
 import Textbox from '../components/textbox';
 import Outputbox from '../components/outputBox';
+import Toolbar from '../components/Toolbar';
+
 
 function Home() {
   return (
     <div style={styles.pageContainer}>
       <h1>Home</h1>
       <div style={styles.boxContainer}>
-        <Textbox />
+        <div className="inputBox">
+          <Toolbar />
+          <Textbox />
+        </div>
         <Outputbox />
       </div>
     </div>

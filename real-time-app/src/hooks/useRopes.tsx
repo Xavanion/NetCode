@@ -1,19 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
 import RopeSequence from 'rope-sequence';
 
-type RopeOperation =
-  | { type: 'insert'; pos: number; value: string }
-  | { type: 'delete'; from: number; to: number };
+// Define types that the rope can do
+type RopeOperation ={ type: 'insert'; pos: number; value: string } | { type: 'delete'; from: number; to: number };
 
-export function useRopeEditor(socket: WebSocket) {
 
-  const rope = RopeSequence.toString();
+export function useRopes(socket: WebSocket | null) {
+  const rope = useRef(RopeSequence.empty);
+  const [text, setText] = useState('');
+
+
+  // Do the operation on the rope
+  const applyOp = (op: RopeOperation) => {
+    curRope = rope.current;
+    if (op.type === 'insert'){
+      
+    }else if (op.type === 'delete'){
+
+    }
+  }
+
+  // Update text ref for textbox display
+  function updateText(){
+
+  }
+
+  // Send websocket of change
+  
+
+  // Return text to text box
+  return [text, updateText];
+
 
 
   /*
-  const ropeRef = useRef(rope(''));
-  const [text, setText] = useState('');
-
   const applyOperation = (op: RopeOperation) => {
     if (op.type === 'insert') {
       ropeRef.current.insert(op.pos, op.value);
