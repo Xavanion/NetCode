@@ -10,7 +10,6 @@ function Textbox() {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
-
   return (
     <div className="textbox-container">
       <textarea
@@ -22,5 +21,4 @@ function Textbox() {
     </div>
   );
 }
-
 export default Textbox;

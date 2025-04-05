@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/react.svg';
 import './styles/Navbar.css';
 
-
 function Navbar(){
     return(
         <nav className="navbar">
@@ -13,7 +12,6 @@ function Navbar(){
                 </Link>
             </div>
             <div className="mid_nav">
-
             </div>
             <div className="right_nav">
 
@@ -21,5 +19,4 @@ function Navbar(){
         </nav>
     )
 }
-
 export default Navbar;

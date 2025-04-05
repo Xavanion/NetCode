@@ -6,12 +6,8 @@ import Navbar from './components/Navbar';
 import CreateAccount from './pages/CreateAccount';
 import './App.css'
 
-
-
 function App() {
   useWS();
-
-
   return (
       <BrowserRouter>
         <div className='app-content'>

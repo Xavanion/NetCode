@@ -12,5 +12,4 @@ function Toolbar(){
         </div>
     )
 }
-
 export default Toolbar;

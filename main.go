@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -29,7 +30,7 @@ func main() {
 	{
 		// API pong response
 		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "pong",})
+			c.JSON(http.StatusOK, gin.H{"message": "pong"})
 		})
 
 		// Websocket endpoint

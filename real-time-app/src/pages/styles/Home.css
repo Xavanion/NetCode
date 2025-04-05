@@ -5,7 +5,6 @@
     padding: 20px;
     box-sizing: border-box;
   }
-  
   .boxContainer {
     display: flex;
     flex-direction: row;

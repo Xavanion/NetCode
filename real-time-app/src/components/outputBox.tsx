@@ -11,5 +11,4 @@ function Outputbox() {
     </div>
   );
 }
-
 export default Outputbox;
