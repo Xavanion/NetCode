@@ -19,6 +19,14 @@ func Testing(){
 	fmt.Println("Code hand:", codehandler.Test())
 
 	codehandler.Run_file("1", "python", "main", "print(\"Hello World\")");
+	str_c := `#include <stdio.h>
+
+int main() {
+  printf("C Hello World!");
+  return 0;
+}`
+
+	codehandler.Run_file("1", "c", "main", str_c);
 }
 
 func NewConnection(conn *websocket.Conn){

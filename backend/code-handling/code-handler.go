@@ -14,7 +14,7 @@ func Run_file(room_id string, language string, filename string, content string){
         log.Fatal(err)
     }
 	// Set it to folder we want to store code in
-	path := filepath.Join(dir, "backend/code-handling/code", filename)
+	path := filepath.Join(dir, "backend/code-handling/code", filename + room_id)
 	path = filepath.Clean(path)
 
 	// Construct the correct filetype
@@ -44,7 +44,14 @@ func Run_file(room_id string, language string, filename string, content string){
 	var cmd *exec.Cmd
 	switch language{
 		case "python":
-			cmd = exec.Command("python3", path)
+			// Just point python3 to the file
+			cmd = exec.Command("bash", "-c", "python3" + path +"; " + "rm "+path)
+		case "c":
+			// Remove the ".c" extension
+			outputPath := path[:len(path)-2] 
+			// Compile to the output path
+			cmd = exec.Command("bash", "-c", "gcc  "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
+			fmt.Println(outputPath)
 	}
 	// Run the command and store the standard output
 	output, err := cmd.Output()
