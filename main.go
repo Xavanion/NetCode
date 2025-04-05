@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	roomhandler "github.com/Xavanion/Hack-KU-2025/backend/room-handling"
@@ -44,11 +43,6 @@ func main() {
 
 			// Wait and read incoming messages
 			for {
-				// Read message
-				messageType, message, err := conn.ReadMessage()
-				if err != nil {
-					break
-				}
 				// close connection when we're done
 				defer conn.Close()
 				roomhandler.NewConnection(conn)
