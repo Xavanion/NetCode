@@ -4,77 +4,63 @@ import RopeSequence from 'rope-sequence';
 // Define types that the rope can do
 type RopeOperation ={ type: 'insert'; pos: number; value: string } | { type: 'delete'; from: number; to: number };
 
-
 export function useRopes(socket: WebSocket | null) {
-  const rope = useRef(RopeSequence.empty);
+  const rope = useRef(RopeSequence.empty as RopeSequence<string>);
   const [text, setText] = useState('');
 
 
   // Do the operation on the rope
   const applyOp = (op: RopeOperation) => {
-    curRope = rope.current;
+    let curRope = rope.current;
     if (op.type === 'insert'){
-      
+      const before = curRope.slice(0,op.pos);
+      const after = curRope.slice(op.pos);
+      curRope = before.append(Array.from(op.value)).append(after);
     }else if (op.type === 'delete'){
-
+      const before = curRope.slice(0,op.from);
+      const after = curRope.slice(op.to);
+      curRope = before.append(after);
     }
+
+    rope.current = curRope;
+    setText((rope.current as any).flatten().join('')); // maybe rope.current.toString() if errors
   }
 
   // Update text ref for textbox display
-  function updateText(){
-
-  }
-
-  // Send websocket of change
-  
-
-  // Return text to text box
-  return [text, updateText];
-
-
-
-  /*
-  const applyOperation = (op: RopeOperation) => {
-    if (op.type === 'insert') {
-      ropeRef.current.insert(op.pos, op.value);
-    } else if (op.type === 'delete') {
-      ropeRef.current.remove(op.from, op.to);
-    }
-    setText(ropeRef.current.toString());
-  };
-
-  const handleChange = (newText: string) => {
-    const oldText = ropeRef.current.toString();
-
-    // Simple diff logic (insert or delete one region)
+  function updateText(newText: string){
+    const oldText = (rope.current as any).flatten().join('');
+    
+    // Progress i to where text is different
     let i = 0;
-    while (i < newText.length && i < oldText.length && newText[i] === oldText[i]) {
+    while (i < newText.length && oldText.length && newText[i] === oldText[i]){
       i++;
     }
 
-    if (oldText.length > newText.length) {
-      // deletion
-      const diffLen = oldText.length - newText.length;
-      const op: RopeOperation = { type: 'delete', from: i, to: i + diffLen };
-      ropeRef.current.remove(op.from, op.to);
-      socket.send(JSON.stringify(op));
-    } else if (newText.length > oldText.length) {
-      // insertion
-      const inserted = newText.slice(i, newText.length - (oldText.length - i));
-      const op: RopeOperation = { type: 'insert', pos: i, value: inserted };
-      ropeRef.current.insert(op.pos, op.value);
-      socket.send(JSON.stringify(op));
+
+    if (oldText.length > newText.length){
+      // Deletion
+      let difference = oldText.length - newText.length;
+      const op: RopeOperation = {type: 'delete', from: i, to: i+difference};
+      applyOp(op);
+      socket?.send(JSON.stringify(op));
+    } else {
+      // Insertion
+      const op: RopeOperation = { type: 'insert', pos: i, value:newText[i]}
+      applyOp(op);
+      socket?.send(JSON.stringify(op));
     }
-
     setText(newText);
-  };
+  }
 
+  // Recieve websocket changes
   useEffect(() => {
+    if (!socket) return;
     socket.onmessage = (e) => {
-      const op: RopeOperation = JSON.parse(e.data);
-      applyOperation(op);
-    };
-  }, [socket]);
+      const op: RopeOperation = JSON.parse(e.data)
+      applyOp(op);
+    }
+  }, [text])
 
-  return { text, handleChange };*/
+  // Return text to text box
+  return [text, updateText];
 }
