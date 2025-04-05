@@ -4,10 +4,15 @@ import (
 	"net/http"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
-func handleHome(w http.ResponseWriter, req *http.Request){
-	http.ServeFile(w, req, "real-time-app/dist/index.html");
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 
@@ -21,9 +26,28 @@ func main() {
 	api := router.Group("/api")
 	{
 		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "pong",
-			})
+			c.JSON(http.StatusOK, gin.H{"message": "pong",})
+		})
+
+		api.GET("/ws", func(c *gin.Context) {
+			// Upgrade GET request to a WebSocket
+			conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+			if err != nil {
+				return
+			}
+			defer conn.Close()
+
+			for {
+				// Read message
+				messageType, message, err := conn.ReadMessage()
+				if err != nil {
+					break
+				}
+				// Echo the message back
+				if err = conn.WriteMessage(messageType, message); err != nil {
+					break
+				}
+			}
 		})
 	}
 	router.Run(":8080")

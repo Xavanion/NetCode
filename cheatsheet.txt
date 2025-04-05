@@ -1,0 +1,16 @@
+// update node
+npm i
+
+//update the node build
+node build run
+
+//run the golang server (in the main directory)
+go run . 
+
+//committting using git
+in the top level directory:
+git add . 
+check with status:
+git status
+git commit -m "notes about the status"
+git push
