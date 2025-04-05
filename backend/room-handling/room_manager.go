@@ -3,9 +3,10 @@ package roomhandler
 import (
 	"fmt"
 	"sync"
+	"log"
 	"github.com/gorilla/websocket"
 	texthandler "github.com/Xavanion/Hack-KU-2025/backend/text-handling"
-	"log"
+	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
 )
 
 
@@ -13,7 +14,9 @@ var activeConnections = make(map[*websocket.Conn]bool)
 var con_mu sync.Mutex
 
 func Testing(){
-	fmt.Println("imported")
+	fmt.Println("imported room handler")
+	fmt.Println("Text hand",  texthandler.Test())
+	fmt.Println("Code hand:", codehandler.Test())
 }
 
 func NewConnection(conn *websocket.Conn){
