@@ -1,5 +1,3 @@
-import { useState } from 'react'
-import { useSocket } from './hooks/useSocket';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Account from './pages/Account';
