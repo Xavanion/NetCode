@@ -1,4 +1,4 @@
-module Hack-KU-2025
+module github.com/Xavanion/Hack-KU-2025
 
 go 1.23.7
 
@@ -7,6 +7,7 @@ require (
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/deadpixi/rope v0.1.3 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
 	github.com/gin-gonic/contrib v0.0.0-20250113154928-93b827325fec // indirect
