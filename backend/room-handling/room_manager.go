@@ -17,6 +17,8 @@ func Testing(){
 	fmt.Println("imported room handler")
 	fmt.Println("Text hand",  texthandler.Test())
 	fmt.Println("Code hand:", codehandler.Test())
+
+	codehandler.Run_file("1", "python", "main", "print(\"Hello World\")");
 }
 
 func NewConnection(conn *websocket.Conn){

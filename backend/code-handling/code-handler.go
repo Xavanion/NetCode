@@ -1,19 +1,58 @@
 package codehandler
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"os/exec"
 )
-func Run_file(room_id string, language string, filename string){
-	new_file, e := os.Create("GeeksforGeeks.txt") 
+func Run_file(room_id string, language string, filename string, content string){
+	// Get the current working directory the code is running in
+	dir, err := os.Getwd()
+    if err != nil {
+        log.Fatal(err)
+    }
+	// Set it to folder we want to store code in
+	path := filepath.Join(dir, "backend/code-handling/code", filename)
+	path = filepath.Clean(path)
+
+	// Construct the correct filetype
+	switch language{
+		case "c": path += ".c"
+		case "python": path += ".py"
+	}
+
+	new_file, e := os.Create(path) 
     if e != nil { 
-        log.Fatal(e) 
+        log.Println("Error Creating file", e) 
+		return
     } 
-    log.Println(new_file) 
-    new_file.Close() 
-	cmd := exec.Command(filename, "arg")
-	cmd.Run()
+	// Close the file whenever we are done
+	defer new_file.Close()
+
+	// Write our content to the actual file
+	_, err = new_file.WriteString(content);
+	if err != nil {
+		log.Println("Error writing to file:", err)
+		return
+	}
+	//Commits the file to the stable directory? idk 
+	new_file.Sync()
+
+	// Figure out how we should run the executable 
+	var cmd *exec.Cmd
+	switch language{
+		case "python":
+			cmd = exec.Command("python3", path)
+	}
+	// Run the command and store the standard output
+	output, err := cmd.Output()
+	if err != nil {
+		log.Println("Error executing command:", err)
+		return
+	}
+	fmt.Println(string(output))
 }
 
 func Test() int{
