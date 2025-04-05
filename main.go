@@ -1,8 +1,10 @@
 package main
 
 import (
-	"net/http"
 	"log"
+	"net/http"
+
+	roomhandler "github.com/Xavanion/Hack-KU-2025/backend/room-handling"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -47,10 +49,9 @@ func main() {
 				if err != nil {
 					break
 				}
-				// Echo the message back
-				if err = conn.WriteMessage(messageType, message); err != nil {
-					break
-				}
+				// close connection when we're done
+				defer conn.Close()
+				roomhandler.NewConnection(conn)
 			}
 		})
 	}
