@@ -1,0 +1,15 @@
+/* Navbar container */
+.navbar {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center; /* Ensures each child takes full height */
+    background-color: #262A2B;
+    color: #edf0f1;
+    height: 60px; /* Adjust to desired navbar height */
+    padding: 0 20px; /* Add horizontal padding if needed */
+}
