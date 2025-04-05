@@ -1,22 +1,30 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func handleHome(w http.ResponseWriter, req *http.Request){
-	http.ServeFile(w, req, "real-time-app/index.html");
+	http.ServeFile(w, req, "real-time-app/dist/index.html");
 }
 
 
 func main() {
-	fmt.Println("test")
-	fs := http.FileServer(http.Dir("real-time-app/"))
-	http.Handle("/static/", http.StripPrefix("/static", fs))
-	http.HandleFunc("/", handleHome)
-	err := http.ListenAndServe(":8080", nil)
-	if(err != nil){
-		fmt.Println("Error starting server:",err)
+	router := gin.Default()
+
+	// Serve frontend static files
+	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
+
+	// Setup route group for the API
+	api := router.Group("/api")
+	{
+		api.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "pong",
+			})
+		})
 	}
+	router.Run(":8080")
 }
