@@ -1,9 +1,10 @@
-package roomhandling 
+package roomhandler 
 
 import (
 	"fmt"
 	"sync"
 	"github.com/gorilla/websocket"
+	"log"
 )
 
 
@@ -14,12 +15,22 @@ func Testing(){
 	fmt.Println("imported")
 }
 
-func newConnection(conn *websocket.Conn){
-	// update our activeConnections so we can broadcast messages to them
+func NewConnection(conn *websocket.Conn){
+	// update our activeConnections so we can message persistently 
 	con_mu.Lock()
 	activeConnections[conn] = true
 	con_mu.Unlock()
 
+	// Listen for incoming messages from this specific connection
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Error reading message:", err)
+			break
+		}
+
+		log.Printf("Received: %s\n", message)
+	}
 
 
 	// Once the connection is closed, remove it from the active connections map

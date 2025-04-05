@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"log"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -19,7 +20,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	router := gin.Default()
-	roomhandling.Testing()
+	roomhandler.Testing()
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
 
@@ -42,8 +43,14 @@ func main() {
 				// Read message
 				messageType, message, err := conn.ReadMessage()
 				if err != nil {
+					log.Println("Error upgrading:", err)
 					break
 				}
+
+				defer conn.Close() // close connection when we're done
+				
+				// send the connection to the ws handler
+				roomhandler.NewConnection(conn)
 				// Echo the message back
 				if err = conn.WriteMessage(messageType, message); err != nil {
 					break
