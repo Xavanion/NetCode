@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"github.com/gorilla/websocket"
+	texthandler "github.com/Xavanion/Hack-KU-2025/backend/text-handling"
 	"log"
 )
 
@@ -20,7 +21,7 @@ func NewConnection(conn *websocket.Conn){
 	con_mu.Lock()
 	activeConnections[conn] = true
 	con_mu.Unlock()
-
+	texthandler.Test()
 	// Listen for incoming messages from this specific connection
 	for {
 		_, message, err := conn.ReadMessage()

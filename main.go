@@ -39,14 +39,9 @@ func main() {
 			if err != nil {
 				return
 			}
+			// close connection when we're done
 			defer conn.Close()
-
-			// Wait and read incoming messages
-			for {
-				// close connection when we're done
-				defer conn.Close()
-				roomhandler.NewConnection(conn)
-			}
+			roomhandler.NewConnection(conn)
 		})
 	}
 	router.Run(":8080")
