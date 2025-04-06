@@ -1,15 +1,15 @@
-.outputboxContainer {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    height: 100%;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    overflow: hidden;
-    padding-top: 0;
-    background-color: #1e1e1e;
+.outputbox-container {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  font-family: 'Fira Code', monospace;
+  color: #d4d4d4;
+  background-color: #1e1e1e;
+  border: none;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+  line-height: 1.5;
 }
 
 .output_textarea {
