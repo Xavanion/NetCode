@@ -6,7 +6,7 @@ import Toolbar from '../components/Toolbar';
 function Home() {
   return (
     <div className="pageContainer">
-      <h1>Home</h1>
+      <h1 className='codeHeader'>Home</h1>
       <div className="boxContainer">
         <div className="inputBox">
           <Toolbar />
