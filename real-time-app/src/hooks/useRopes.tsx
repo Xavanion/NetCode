@@ -28,7 +28,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
 
     rope.current = curRope;
     const curText = ropeToString(rope.current);
-    setText(curText); // maybe rope.current.toString() if errors
+    setText(curText);
   }
 
 
@@ -60,11 +60,11 @@ export function useRopes(): [string, (newText:string) => void, string] {
       socket.current?.send(JSON.stringify(op));
     } else {
       // Insertion
-      const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:newText[i]}
+      const inserted = newText.slice(i, newText.length - (oldText.length - i));
+      const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:inserted};
       applyOp(op);
       socket.current?.send(JSON.stringify(op));
     }
-    setText(newText);
   }
   
   // Recieve websocket changes
