@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useWS } from './hooks/useWS';
 import Home from './pages/Home';
 import Account from './pages/Account';
 import Navbar from './components/Navbar';
@@ -7,7 +6,6 @@ import CreateAccount from './pages/CreateAccount';
 import './App.css'
 
 function App() {
-  useWS();
   return (
       <BrowserRouter>
         <div className='app-content'>

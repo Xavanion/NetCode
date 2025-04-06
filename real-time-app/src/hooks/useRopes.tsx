@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import { useWS } from './WebSocketContext';
 import RopeSequence from 'rope-sequence';
 
 // Define types that the rope can do
 type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: string } | { event: 'text_update'; type: 'delete'; from: number; to: number };
 
-export function useRopes(socket: WebSocket | null): [string, (newText:string) => void] {
+export function useRopes(): [string, (newText:string) => void] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>);
   const [text, setText] = useState('');
+  const socket = useWS()
 
   // Do the operation on the rope
   const applyOp = (op: RopeOperation) => {
@@ -28,11 +30,10 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
   // Update text ref for textbox display
   function updateText(newText: string){
     const oldText = (rope.current as any).flatten().join('');
-    console.log('UPDATE CALLED');
     
     // Progress i to where text is different
     let i = 0;
-    while (i < newText.length && oldText.length && newText[i] === oldText[i]){
+    while (i < newText.length && i < oldText.length && newText[i] === oldText[i]){
       i++;
     }
 
@@ -42,22 +43,20 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
       let difference = oldText.length - newText.length;
       const op: RopeOperation = {event: 'text_update', type: 'delete', from: i, to: i+difference};
       applyOp(op);
-      socket?.send(JSON.stringify(op));
+      socket.current?.send(JSON.stringify(op));
     } else {
       // Insertion
       const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:newText[i]}
       applyOp(op);
-      socket?.send(JSON.stringify(op));
+      socket.current?.send(JSON.stringify(op));
     }
     setText(newText);
   }
   
   // Recieve websocket changes
   useEffect(() => {
-    if (!socket) return;
-    console.log("USE EFFECT");
-    socket.onmessage = (e) => {
-      console.log("PRE OP");
+    if (!socket.current) return;
+    socket.current.onmessage = (e) => {
       const op: RopeOperation = JSON.parse(e.data)
       console.log(op);
       applyOp(op);
