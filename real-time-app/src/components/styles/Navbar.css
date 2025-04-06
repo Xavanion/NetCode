@@ -8,7 +8,7 @@
     width: 100%;
     justify-content: space-between;
     align-items: center; /* Ensures each child takes full height */
-    background-color: #262A2B;
+    background-color: #51d0de;
     color: #edf0f1;
     height: 60px; /* Adjust to desired navbar height */
     padding: 0 20px; /* Add horizontal padding if needed */
