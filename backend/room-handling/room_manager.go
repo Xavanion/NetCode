@@ -58,12 +58,13 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 	case "run_code":
 		//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
 		out := codehandler.Run_file("one", string(requestData.Language), "main-py-", string(room.mainText))
+		room.broadcastUpdate(nil, "output_update", out, false)
 		fmt.Printf("Output: %s\n", out)
 	case "code_save":
 	}
 }
 
-func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string) {
+func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, message string, isParsed bool) {
 	room.con_mu.Lock()
 	defer room.con_mu.Unlock()
 	fmt.Println(room.activeConnections)
@@ -72,18 +73,29 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string) {
 		if conn == startconn{
 			continue
 		}
-		var parsed map[string]interface{}
-		json.Unmarshal([]byte(message), &parsed)
+		var jsonData []byte
+		var err error
+		if(isParsed){
+			var parsed map[string]interface{}
+			json.Unmarshal([]byte(message), &parsed)
 
-		msg := sendUpdateJson{
-			Event:  "input_update",
-			Update: parsed,
+			msg := sendUpdateJson{
+				Event: event,
+				Update: parsed,
+			}
+			jsonData, err = json.Marshal(msg)
+		} else {
+			msg := sendUpdateJson{
+				Event: event,
+				Update: message,
+			}
+			jsonData, err = json.Marshal(msg)
 		}
 
-		jsonData, err := json.Marshal(msg)
 		if err != nil {
 			log.Println("Failed to marshall update message json: ", err)
 		}
+
 		if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 			log.Println("Failed to send message ", err)
 			conn.Close()                         // Close connection if it fails to send a message
@@ -111,7 +123,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 			position := int(json_mess["from"].(float64))
 			room.mainText = deleteByte(room.mainText, position)
 		}
-		room.broadcastUpdate(conn, message)
+		room.broadcastUpdate(conn, "input_update", message, true)
 	default:
 		log.Print("Invalid json event")
 	}
