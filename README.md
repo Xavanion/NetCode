@@ -16,4 +16,6 @@ A real-time collaborative code editor built with **React**, using a **rope data 
 ---
 
 ## 📁 Project Structure
-
+ - real-time-app: The front end of the code where the site communicates with the backend and displays the code to the user
+ - backend: Where the websocket server lives and communicates with Gemini
+ 
