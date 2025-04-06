@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"reflect"
 	"sync"
 
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
@@ -62,9 +61,9 @@ func (room *Room) FileApiRequest(requestData ApiRequest){
 func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string){
 	room.con_mu.Lock()
 	for conn := range room.activeConnections {
-		if conn == startconn{
-			break
-		}
+		//if conn == startconn{
+		//	continue	
+		//}
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 			conn.Close() // Close connection if it fails to send a message
 			delete(room.activeConnections, conn) // Remove broken connection
@@ -87,11 +86,10 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn){
 			if(position > len(room.mainText)){
 				position -= 1
 			}
-			fmt.Println("Type of value:", reflect.TypeOf([]byte(json_mess["value"].(string))[0]))
 			room.mainText = insertByte(room.mainText, position, []byte(json_mess["value"].(string))[0]) 
-			//room.broadcastUpdate(conn, message)
+			room.broadcastUpdate(conn, message)
 		} else if json_mess["type"] == "delete" {
-			position := int(json_mess["from"].(float64)) - 1
+			position := int(json_mess["from"].(float64))
 			room.mainText = deleteByte(room.mainText, position)
 		}
 	}
