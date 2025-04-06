@@ -45,6 +45,7 @@ func main() {
 	{
 		api.POST("/", func(c *gin.Context) {
 			var requestData roomhandler.ApiRequest 
+			fmt.Println("HIT")
 			if err := c.ShouldBindJSON(&requestData); err != nil {
 				// If the binding fails, return an error
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

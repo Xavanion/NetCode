@@ -5,8 +5,13 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"time"
+	"os"
+	"context"
 
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
+	genai "github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 	"github.com/gorilla/websocket"
 )
 
@@ -75,6 +80,22 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 		room.broadcastUpdate(nil, "output_update", out, false)
 		fmt.Printf("Output: %s\n", out)
 	case "code_save":
+	case "code_review":
+		ctx := context.Background()
+		// Access your API key as an environment variable (see "Set up your API key" above)
+		client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("AIzaSyA7pysrKTjq_w2Aug-NjWaE2BQ9PpjIlVM")))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer client.Close()
+
+		model := client.GenerativeModel("gemini-2.0-flash")
+
+		resp, err := model.GenerateContent(ctx, genai.Text("Write a story about a magic backpack."))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(resp)
 	}
 }
 
@@ -152,7 +173,8 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.activeConnections[conn] = true
 	room.con_mu.Unlock()
 	defer conn.Close()
-
+	
+	time.Sleep(time.Duration(500)*time.Millisecond)
 	msg := sendUpdateJson{
 		Event:  "input_update",
 		Update: string(room.mainText),
