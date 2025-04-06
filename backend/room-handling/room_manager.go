@@ -21,7 +21,10 @@ type RoomManager struct {
 	Rooms map[string]*Room
 	mu sync.RWMutex
 }
-
+type ApiRequest struct {
+	Event  string `json:"event"`
+	Language string `json:"language"`
+}
 
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
@@ -45,6 +48,17 @@ func (manager *RoomManager) GetRoom(id string) *Room {
 	room := manager.Rooms[id]
 	return room 
 }
+
+func (room *Room) FileApiRequest(requestData ApiRequest){
+	switch requestData.Event{	
+	case "run_code":
+			fmt.Println("Hit")	
+			fmt.Println(string(room.mainText))
+			codehandler.Run_file("one", "python", "main-py-", string(room.mainText))
+	case "code_save":
+	}
+}
+
 func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string){
 	room.con_mu.Lock()
 	for conn := range room.activeConnections {
@@ -52,8 +66,6 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string){
 			break
 		}
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
-			fmt.Println("A")
-			fmt.Println("Error sending conway board update:", err)
 			conn.Close() // Close connection if it fails to send a message
 			delete(room.activeConnections, conn) // Remove broken connection
 		}
@@ -65,7 +77,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn){
 	// Turn the raw text back into a usable type
 	var json_mess map[string]any
 	json.Unmarshal([]byte(message), &json_mess)
-	fmt.Println(json_mess)
+	//fmt.Println(json_mess)
 	fmt.Println(message)
 	switch json_mess["event"]{
 	case "text_update":
@@ -82,12 +94,8 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn){
 			position := int(json_mess["from"].(float64)) - 1
 			room.mainText = deleteByte(room.mainText, position)
 		}
-	case "run_code":
-			fmt.Println("Hit")	
-			codehandler.Run_file("one", "python", "main-py-", string(room.mainText))
-	case "code_save":
 	}
-	fmt.Printf("Body:%s", string(room.mainText))
+	fmt.Printf("Body:%s\n", string(room.mainText))
 }
 
 func (room *Room) NewConnection(conn *websocket.Conn) {
@@ -115,7 +123,7 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 func insertByte(slice []byte, index int, value byte) []byte {
     // Ensure index is valid
     if index < 0 || index > len(slice) {
-        fmt.Println("Index out of range")
+        log.Println("Index out of range")
 		return slice
     }
 
@@ -142,4 +150,6 @@ func deleteByte(slice []byte, index int) []byte {
     // Remove the byte at the given index
     return append(slice[:index], slice[index+1:]...)
 }
+
+
 
