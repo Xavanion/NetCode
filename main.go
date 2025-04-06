@@ -47,6 +47,9 @@ func main() {
 			defer conn.Close()
 			roomManager.GetRoom("one").NewConnection(conn)
 		})
+		api.POST("/api", func(c *gin.Context) {
+
+		})
 	}
 	router.Run(":8080")
 }
