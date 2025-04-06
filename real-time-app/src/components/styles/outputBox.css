@@ -5,6 +5,7 @@
     align-items: center;
     padding: 10px;
     overflow: hidden;
+    margin-top: 45px;
   }
   .textarea {
     width: 100%;

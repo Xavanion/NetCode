@@ -5,7 +5,7 @@ function Toolbar(){
         <div className="toolbar">
             <ul>
                 <li>
-                    <button>Run</button>
+                    <button>Run </button>
                     <button>Save</button>
                 </li>
             </ul>
