@@ -4,13 +4,12 @@ import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import '../styles/Toolbar.css';
 
 type Props = {
-    curText: string;
     reviewText: (text: string) => void;
 };
 
 
 
-function Toolbar({curText, reviewText}: Props){
+function Toolbar({ reviewText}: Props){
     const  [selectedLang, setLanguage] = useState('C');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prev => !prev);
@@ -60,7 +59,7 @@ function Toolbar({curText, reviewText}: Props){
 
     async function handleReviewClick(){
         try{
-            const response = await fetch('http://localhost/api', {
+            const response = await fetch('http://localhost:8080/api', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ event: 'code_review', room:'one'})

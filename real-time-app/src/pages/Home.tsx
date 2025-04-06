@@ -17,7 +17,7 @@ function Home() {
       <h1 className='codeHeader'>Codin time</h1>
       <div className="boxContainer">
         <div className="inputBox">
-          <Toolbar curText={text} reviewText={setReviewText}/>
+          <Toolbar reviewText={setReviewText}/>
           <Textbox curText={text} setText={updateText}/>
         </div>
         <div className='outputBoxContainer'>
