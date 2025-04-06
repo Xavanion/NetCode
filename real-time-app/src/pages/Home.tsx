@@ -20,15 +20,16 @@ function Home() {
           <Toolbar curText={text} reviewText={setReviewText}/>
           <Textbox curText={text} setText={updateText}/>
         </div>
-        <OutputToolbar
-          activeOutput={activeOutput}
-          setActiveOutput={setActiveOutput}
-        />
-        <Outputbox
-          curText={activeOutput === 'terminal' ? outputText : responseText}
-          activeOutput={activeOutput}
-        />
-
+        <div className='outputBoxContainer'>
+          <OutputToolbar
+            activeOutput={activeOutput}
+            setActiveOutput={setActiveOutput}
+          />
+          <Outputbox
+            curText={activeOutput === 'terminal' ? outputText : responseText}
+            activeOutput={activeOutput}
+          />
+        </div>
       </div>
     </div>
   );
