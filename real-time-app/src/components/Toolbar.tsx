@@ -60,10 +60,10 @@ function Toolbar({curText, reviewText}: Props){
 
     async function handleReviewClick(){
         try{
-            const response = await fetch('http://localhost/api/review', {
+            const response = await fetch('http://localhost/api', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({code: curText})
+                body: JSON.stringify({ event: 'code_review', room:'one'})
             })
             if (response.ok){
                 console.log("Code Review sent successfully");
