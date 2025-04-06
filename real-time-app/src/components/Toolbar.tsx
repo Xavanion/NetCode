@@ -30,7 +30,7 @@ function Toolbar({curText, reviewText}: Props){
                  headers: {
                      'Content-Type': 'application/json'
                  },
-                 body: JSON.stringify({event: 'run_code', language: selectedLang})
+                 body: JSON.stringify({event: 'run_code', language: selectedLang, room:'one'})
              })
              if (response.ok){
                  console.log("Run successful");

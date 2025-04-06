@@ -24,6 +24,7 @@ type RoomManager struct {
 type ApiRequest struct {
 	Event    string `json:"event"`
 	Language string `json:"language"`
+	Room string `json:"room"`
 }
 
 type sendUpdateJson struct {
@@ -133,8 +134,9 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 			}
 			room.insertBytes(position, []byte(json_mess["value"].(string)))
 		} else if json_mess["type"] == "delete" {
-			position := int(json_mess["from"].(float64))
-			room.deleteByte(position)
+			from := int(json_mess["from"].(float64))
+			to := int(json_mess["to"].(float64))
+			room.deleteByte(from, to-from)
 		}
 		room.broadcastUpdate(conn, "input_update", message, true)
 	default:
@@ -143,13 +145,6 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	fmt.Printf("Body:%s\n", string(room.mainText))
 }
 
-func insertBytes(slice []byte, index int, values []byte) []byte {
-	if index < 0 || index > len(slice) {
-		log.Println("Index out of range for insertBytes")
-		return slice
-	}
-	return append(slice[:index], append(values, slice[index:]...)...)
-}
 
 func (room *Room) NewConnection(conn *websocket.Conn) {
 	// update our activeConnections so we can message persistently
@@ -201,20 +196,11 @@ func (room *Room) insertBytes( index int, value []byte) {
 		return 
 	}
 
-	// Check if slice needs reallocation
-	if len(slice) == cap(slice) {
-		// Double the capacity to minimize future reallocations
-		newSlice := make([]byte, len(slice), cap(slice)*2+1)
-		copy(newSlice, slice)
-		slice = newSlice
-	}
-
 	// Insert the byte at the given index
-	slice = append(slice[:index], append(value, slice[index:]...)...)
-	room.mainText =  slice
+	room.mainText = append(slice[:index], append(value, slice[index:]...)...)
 }
 
-func (room *Room) deleteByte(index int) {
+func (room *Room) deleteByte(index int, num_chars int) {
 	slice := room.mainText
 	room.text_mu.Lock()
 	defer room.text_mu.Unlock()
@@ -226,5 +212,5 @@ func (room *Room) deleteByte(index int) {
 	}
 
 	// Remove the byte at the given index
-	room.mainText = append(slice[:index], slice[index+1:]...)
+	room.mainText = append(slice[:index], slice[index+num_chars:]...)
 }

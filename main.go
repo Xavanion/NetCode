@@ -50,9 +50,8 @@ func main() {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			// Pass the parsed data to your function for processing
-			room, exists := roomManager.GetRoom("one")
-			fmt.Println("AAA")
+			// Check if the room exists, if it does we tell that room to do the api request
+			room, exists := roomManager.GetRoom(requestData.Room)
 			if(exists){
 				fmt.Println("Running api")
 				room.FileApiRequest(requestData)
