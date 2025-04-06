@@ -55,9 +55,8 @@ func main() {
 			room, exists := roomManager.GetRoom(requestData.Room)
 			if(exists){
 				fmt.Println("Running api")
-				room.FileApiRequest(requestData)
+				room.FileApiRequest(requestData, c)
 			}
-			c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
 		})
 		// Websocket endpoint
 		api.GET("/ws", func(c *gin.Context) {

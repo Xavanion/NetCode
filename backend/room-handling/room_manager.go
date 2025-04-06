@@ -1,19 +1,22 @@
 package roomhandler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
-	"sync"
-	"time"
 	"os"
-	"context"
+	"sync"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
 	genai "github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
 	"github.com/gorilla/websocket"
+	"google.golang.org/api/option"
 )
 
 type Room struct {
@@ -76,7 +79,7 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 	}
 }
 
-func (room *Room) FileApiRequest(requestData ApiRequest) {
+func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	switch requestData.Event {
 	case "run_code":
 		//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
@@ -90,6 +93,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 		out := codehandler.Run_file("one", string(requestData.Language), "main-", string(room.mainText))
 		room.broadcastUpdate(nil, "output_update", out, false)
 		fmt.Printf("Output: %s\n", out)
+		c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
 	case "code_save":
 	case "code_review":
 		// Access your API key as an environment variable 
@@ -112,7 +116,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 		defer client.Close()
 
 		model := client.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
-		resp, err := model.GenerateContent(ctx, genai.Text("Give constructive feedback over the following code:\n"+string(room.mainText)))
+		resp, err := model.GenerateContent(ctx, genai.Text("Give constructive feedback, being concise but not overly so, over the following code:\n"+string(room.mainText)))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -131,6 +135,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 			}
 		}
 		fmt.Println("out:", whole)
+		c.JSON(http.StatusOK, gin.H{"review": whole})
 	}
 }
 
