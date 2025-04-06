@@ -15,7 +15,7 @@ function Toolbar({curText, reviewText}: Props){
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prev => !prev);
 
-    const languages = ['C', 'Python'];
+    const languages = ['C', 'Python', 'Java', 'C++', 'JavaScript', 'Go', 'Rust', 'PHP', 'TypeScript', 'C#'];
 
     const selectLanguage = (lang: string) => {
         setLanguage(lang);
