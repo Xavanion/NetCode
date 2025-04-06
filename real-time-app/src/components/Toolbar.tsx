@@ -1,4 +1,3 @@
-import { useWS } from '../hooks/useWS';
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
