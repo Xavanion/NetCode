@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"os/exec"
 )
-func Run_file(room_id string, language string, filename string, content string){
+func Run_file(room_id string, language string, filename string, content string) string{
 	// Get the current working directory the code is running in
 	dir, err := os.Getwd()
     if err != nil {
@@ -26,7 +26,7 @@ func Run_file(room_id string, language string, filename string, content string){
 	new_file, e := os.Create(path) 
     if e != nil { 
         log.Println("Error Creating file", e) 
-		return
+		return "System error creating file"
     } 
 	// Close the file whenever we are done
 	defer new_file.Close()
@@ -35,7 +35,7 @@ func Run_file(room_id string, language string, filename string, content string){
 	_, err = new_file.WriteString(content);
 	if err != nil {
 		log.Println("Error writing to file:", err)
-		return
+		return "System error writing to file"
 	}
 	//Commits the file to the stable directory? idk 
 	new_file.Sync()
@@ -57,8 +57,10 @@ func Run_file(room_id string, language string, filename string, content string){
 	output, err := cmd.Output()
 	if err != nil {
 		log.Println("Error executing command:", err)
-		return
+		return "System error executing command"
 	}
 	fmt.Println(string(output))
+
+	return string(output)
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -50,7 +51,7 @@ func main() {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			
+			fmt.Println(requestData);	
 			// Pass the parsed data to your function for processing
 			roomManager.GetRoom("one").FileApiRequest(requestData)
 			c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
