@@ -57,7 +57,14 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 	switch requestData.Event {
 	case "run_code":
 		//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
-		out := codehandler.Run_file("one", string(requestData.Language), "main-py-", string(room.mainText))
+		/*codehandler.Run_file("1", "C", "main", `
+#include <stdio.h>
+
+int main(){
+    printf("Hello World");
+    return 0;
+}`)*/
+		out := codehandler.Run_file("one", string(requestData.Language), "main-", string(room.mainText))
 		room.broadcastUpdate(nil, "output_update", out, false)
 		fmt.Printf("Output: %s\n", out)
 	case "code_save":
