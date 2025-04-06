@@ -39,23 +39,6 @@ function Toolbar({ reviewText}: Props){
          }
     }
 
-    async function save_code(){
-        try{
-           const response = await fetch('http://localhost:8080/api', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({event: 'save_code', language: null})
-            })
-            if (response.ok){
-                console.log("Saved successful");
-            }
-        } catch(error){
-            console.error("Error Occured:", error);
-        }
-    }
-
 
     async function handleReviewClick(){
         try{
