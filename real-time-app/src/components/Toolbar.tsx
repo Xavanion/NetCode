@@ -8,7 +8,6 @@ function Toolbar(){
     const  [selectedLang, setLanguage] = useState('C');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prev => !prev);
-    const socket = useWS();
 
     const languages = ['C', 'Python', 'C++', 'Java'];
 
@@ -18,9 +17,26 @@ function Toolbar(){
     };
 
 
-    function run_code(){
-        if (!socket.current || socket.current.readyState !== WebSocket.OPEN) return;
-        socket.current.send(JSON.stringify({event: 'run_code', language: selectLanguage}));
+    async function run_code(){
+        const response = await fetch('localhost:8080/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: "include",
+            body: JSON.stringify({event: 'run_code', language: selectedLang})
+        })
+    }
+
+    async function save_code(){
+        const response = await fetch('localhost:8080/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: "include",
+            body: JSON.stringify({event: 'save_code', language: null})
+        })
     }
 
 
@@ -39,7 +55,7 @@ function Toolbar(){
                         )}
                     </div>
                     <button onClick={ run_code }>Run </button>
-                    <button>Save</button>
+                    <button onClick={ save_code }>Save</button>
                 </li>
             </ul>
         </div>
