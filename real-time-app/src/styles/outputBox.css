@@ -64,6 +64,11 @@
 }
 .outputbox-container {
   height: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-family: 'Fira Code', monospace;
+  color: #d4d4d4;
+  background-color: #1e1e1e;
   display: flex;
   flex-direction: column;
 }
