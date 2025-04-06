@@ -143,8 +143,20 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.activeConnections[conn] = true
 	room.con_mu.Unlock()
 	defer conn.Close()
+	
+	msg := sendUpdateJson{
+		Event: "input_update",
+		Update: string(room.mainText),
+	}
+	jsonData, err := json.Marshal(msg)
 
-	if err := conn.WriteMessage(websocket.TextMessage, []byte("sup")); err != nil {
+	if err != nil {
+		log.Println("Failed to marshall update message json: ", err)
+	}
+
+	// Catch the new connection up with what's going on
+
+	if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 		conn.Close()                         // Close connection if it fails to send a message
 		delete(room.activeConnections, conn) // Remove broken connection
 	}
