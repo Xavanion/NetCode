@@ -116,8 +116,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 		defer client.Close()
 
 		model := client.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
-		resp, err := model.GenerateContent(ctx, genai.Text("
-			You are an expert software engineer and teacher. Review the following code for correctness, clarity, performance, security, and best practices.
+		resp, err := model.GenerateContent(ctx, genai.Text(`You are an expert software engineer and teacher. Review the following code for correctness, clarity, performance, security, and best practices.
 			Return your feedback in well-organized Markdown using multiple sections:
 			Summary
 				Briefly describe what the code appears to do.
@@ -133,7 +132,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 			Cleaned-up Version (if applicable)
 				If possible, include a revised version of the code incorporating your suggestions.
 				Make sure all sections use Markdown formatting properly (e.g., headers, bullet points, code blocks).
-				Aim to be clear, friendly, and professional, as if giving feedback to a peer:\n"+string(room.mainText)))
+				Aim to be clear, friendly, and professional, as if giving feedback to a peer:\n`+string(room.mainText)))
 		if err != nil {
 			log.Fatal(err)
 		}
