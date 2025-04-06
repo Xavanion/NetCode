@@ -51,8 +51,9 @@ func Run_file(room_id string, language string, filename string, content string) 
 			// Remove the ".c" extension
 			outputPath := path[:len(path)-2] 
 			// Compile to the output path
-			cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
+			// cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
 			fmt.Println(outputPath)
+			cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath)
 	}
 	// Run the command and store the standard output
 	output, err := cmd.Output()
