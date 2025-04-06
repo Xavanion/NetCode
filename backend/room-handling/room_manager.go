@@ -151,9 +151,9 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.activeConnections[conn] = true
 	room.con_mu.Unlock()
 	defer conn.Close()
-	
+
 	msg := sendUpdateJson{
-		Event: "input_update",
+		Event:  "input_update",
 		Update: string(room.mainText),
 	}
 	jsonData, err := json.Marshal(msg)

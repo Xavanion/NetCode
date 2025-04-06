@@ -3,7 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import '../styles/Toolbar.css';
 
-function Toolbar(){
+type Props = {
+    curText: string;
+    reviewText: (text: string) => void;
+};
+
+
+
+function Toolbar({curText, reviewText}: Props){
     const  [selectedLang, setLanguage] = useState('C');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prev => !prev);
@@ -51,6 +58,23 @@ function Toolbar(){
     }
 
 
+    async function handleReviewClick(){
+        try{
+            const response = await fetch('http://localhost/api/review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({code: curText})
+            })
+            if (response.ok){
+                console.log("Code Review sent successfully");
+                const data = await response.json();
+                reviewText(data.review);
+            }
+        } catch(error){
+            console.error("Error Occured with code review:", error)
+        }
+    }
+
     return (
         <div className="toolbar">
             <ul>
@@ -67,6 +91,7 @@ function Toolbar(){
                     </div>
                     <button onClick={ run_code }>Run </button>
                     <button onClick={ save_code }>Save</button>
+                    <button onClick={handleReviewClick}>Review Code</button>
                 </li>
             </ul>
         </div>
