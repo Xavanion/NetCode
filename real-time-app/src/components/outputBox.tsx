@@ -17,7 +17,7 @@ function Outputbox({ curText, activeOutput }: Props) {
           className="output_textarea"
         />
       ) : (
-        <div className="output_markdown">
+        <div className="output_markdown_scroll">
           {curText.trim() === '' ? (
             <div className="markdown-placeholder">Code review will be shown here</div>
           ) : (
