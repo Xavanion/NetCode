@@ -25,6 +25,12 @@ type ApiRequest struct {
 	Language string `json:"language"`
 }
 
+type sendUpdateJson struct {
+	Event  string `json:"name"`
+	Message string `json:"email"`
+}
+
+
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
 		Rooms: make(map[string]*Room),
@@ -60,16 +66,26 @@ func (room *Room) FileApiRequest(requestData ApiRequest){
 
 func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string){
 	room.con_mu.Lock()
+	defer room.con_mu.Unlock()
+	fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
+
+		msg := sendUpdateJson{
+			Event:  "input_update",
+			Message: message,
+		}
+		jsonData, err := json.Marshal(msg)
+		if err != nil {
+			log.Println("Failed to marshall update message json")
+		}
 		//if conn == startconn{
 		//	continue	
 		//}
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(jsonData)); err != nil {
 			conn.Close() // Close connection if it fails to send a message
 			delete(room.activeConnections, conn) // Remove broken connection
 		}
 	}
-	room.con_mu.Unlock()
 }
 
 func (room *Room) handleMessages(message string, conn *websocket.Conn){
@@ -87,11 +103,13 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn){
 				position -= 1
 			}
 			room.mainText = insertByte(room.mainText, position, []byte(json_mess["value"].(string))[0]) 
-			room.broadcastUpdate(conn, message)
 		} else if json_mess["type"] == "delete" {
 			position := int(json_mess["from"].(float64))
 			room.mainText = deleteByte(room.mainText, position)
 		}
+		room.broadcastUpdate(conn, message)
+	default:
+		log.Print("Invalid json event")
 	}
 	fmt.Printf("Body:%s\n", string(room.mainText))
 }
