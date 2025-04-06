@@ -6,7 +6,7 @@ function Outputbox() {
       <textarea
         readOnly
         placeholder="Output will be shown here"
-        className="textarea"
+        className="output_textarea"
       />
     </div>
   );

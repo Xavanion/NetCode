@@ -1,34 +1,97 @@
 .toolbar {
-    display: flex;
-  }
-  .toolbar ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-  }
-  .toolbar li {
-    margin-left: 10px;
-  }
-  .toolbar button {
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-right: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc; /* Border around the button */
-    background-color: #f5f5f5; /* Light gray background */
-    color: #333; /* Dark text color for readability */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for background and text color */
-  }
-  .toolbar button:hover {
-    background-color: #e0e0e0; /* Slightly darker gray when hovered */
-  }
-  .toolbar button:focus {
-    outline: none; /* Remove default focus outline */
-    background-color: #d0d0d0; /* Change to a darker shade when focused */
-  }
-  .toolbar button:active {
-    background-color: #b0b0b0; /* Change to an even darker shade when clicked */
-    color: white; /* White text when button is clicked */
-  }
-  
+  display: flex;
+  align-items: center;
+  background-color: #252526;
+  color: #ccc;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+}
+
+.toolbar ul {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.toolbar li {
+  display: flex;
+}
+
+.toolbar button {
+  background: none;
+  border: none;
+  color: #ccc;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.toolbar button:hover {
+  background-color: #3c3c3c;
+}
+
+.toolbar button:focus {
+  outline: none;
+  background-color: #444;
+}
+
+.toolbar button:active {
+  background-color: #555;
+  color: white;
+}
+
+
+.language-selector {
+  position: relative;
+  margin-right: 20px;
+}
+
+.lang-button {
+  padding: 6px 12px;
+  font-size: 13px;
+  width: 80px;
+  background: none;
+  border: 1px solid #444;
+  color: #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.lang-button:hover {
+  background-color: #3c3c3c;
+}
+
+.dropdown {
+  position: absolute;
+  flex-direction: column;
+  top: 36px;
+  left: 0;
+  background-color: #252526;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 4px 0;
+  width: 100%;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown li {
+  padding: 8px 12px;
+  color: #ccc;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdown li:hover {
+  background-color: #3c3c3c;
+}
