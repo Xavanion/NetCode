@@ -13,3 +13,24 @@
     height: 60px; /* Adjust to desired navbar height */
     padding: 0 20px; /* Add horizontal padding if needed */
 }
+
+/* Left segment (logo and name) */
+.left_nav {
+    display: flex;
+    align-items: center; /* Center items vertically within the segment */
+}
+
+
+.left_nav .name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #edf0f1;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.left_nav .image {
+    height: 2.3rem; /* Adjust size relative to the navbar height */
+    margin-right: 0.5rem;
+}

@@ -3,7 +3,7 @@
   flex-direction: column;
   height: calc(100vh - 60px);
   margin-top: 60px;
-  background-color: rgb(21,21,21);
+  background-color: rgb(30, 30, 30);
   color: white;
   overflow: hidden;
 }
