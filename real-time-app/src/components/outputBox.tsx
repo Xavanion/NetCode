@@ -1,10 +1,16 @@
 import '../styles/outputBox.css';
 
-function Outputbox() {
+
+type Props = {
+  curText: string;
+};
+
+function Outputbox({ curText }: Props) {
   return (
     <div className="outputboxContainer">
       <textarea
         readOnly
+        value={curText}
         placeholder="Output will be shown here"
         className="output_textarea"
       />

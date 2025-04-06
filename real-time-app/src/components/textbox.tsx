@@ -1,17 +1,19 @@
 import React from 'react';
-import { useRopes } from '../hooks/useRopes';
 import '../styles/textbox.css';
 
-function Textbox() {
-  const [text, setText] = useRopes();
+type Props = {
+  curText: string;
+  setText: (value: string) => void;
+};
 
+function Textbox({ curText, setText }: Props) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
   return (
     <div className="textbox-container">
       <textarea
-        value={text}
+        value={curText}
         onChange={handleChange}
         placeholder="Enter your text here"
         className="textarea"
