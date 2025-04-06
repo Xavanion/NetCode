@@ -18,7 +18,11 @@ function Outputbox({ curText, activeOutput }: Props) {
         />
       ) : (
         <div className="output_markdown">
-          <ReactMarkdown>{curText}</ReactMarkdown>
+          {curText.trim() === '' ? (
+            <div className="markdown-placeholder">Code review will be shown here</div>
+          ) : (
+            <ReactMarkdown>{curText}</ReactMarkdown>
+          )}
         </div>
       )}
     </div>
