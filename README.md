@@ -1,6 +1,6 @@
 # 🧠 Collaborative Code Editor
 
-A real-time collaborative code editor built with **React**, using a **rope data structure** for efficient text updates and **WebSockets** for live synchronization between users. Features markdown-rendered code reviews, responsive layout, and simple user account routing.
+A real-time collaborative code editor built with **React**, using a **rope data structure** for efficient text updates and **WebSockets** for live synchronization between users. Features markdown-rendered code reviews, and a responsive layout.
 
 ---
 
