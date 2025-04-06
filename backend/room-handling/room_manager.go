@@ -26,8 +26,8 @@ type ApiRequest struct {
 }
 
 type sendUpdateJson struct {
-	Event  string `json:"name"`
-	Message string `json:"email"`
+	Event  string `json:"event"`
+	Message string `json:"update"`
 }
 
 
@@ -69,19 +69,18 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string){
 	defer room.con_mu.Unlock()
 	fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
-
+		//if conn == startconn{
+		//	continue	
+		//}
 		msg := sendUpdateJson{
 			Event:  "input_update",
 			Message: message,
 		}
 		jsonData, err := json.Marshal(msg)
 		if err != nil {
-			log.Println("Failed to marshall update message json")
+			log.Println("Failed to marshall update message json: ", err)
 		}
-		//if conn == startconn{
-		//	continue	
-		//}
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(jsonData)); err != nil {
+		if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 			conn.Close() // Close connection if it fails to send a message
 			delete(room.activeConnections, conn) // Remove broken connection
 		}
@@ -119,6 +118,12 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Lock()
 	room.activeConnections[conn] = true
 	room.con_mu.Unlock()
+
+	if err := conn.WriteMessage(websocket.TextMessage, []byte("sup")); err != nil {
+		conn.Close() // Close connection if it fails to send a message
+		delete(room.activeConnections, conn) // Remove broken connection
+	}
+
 	// Listen for incoming messages from this specific connection
 	for {
 		_, message, err := conn.ReadMessage()
