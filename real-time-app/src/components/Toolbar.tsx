@@ -89,7 +89,6 @@ function Toolbar({ reviewText}: Props){
                         )}
                     </div>
                     <button onClick={ run_code }>Run </button>
-                    <button onClick={ save_code }>Save</button>
                     <button onClick={handleReviewClick}>Review Code</button>
                 </li>
             </ul>
