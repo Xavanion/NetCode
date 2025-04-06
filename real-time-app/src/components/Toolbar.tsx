@@ -18,25 +18,39 @@ function Toolbar(){
 
 
     async function run_code(){
-        const response = await fetch('localhost:8080/api', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-            body: JSON.stringify({event: 'run_code', language: selectedLang})
-        })
+        try{
+            const response = await fetch('localhost:8080/api', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json'
+                 },
+                 credentials: "include",
+                 body: JSON.stringify({event: 'run_code', language: selectedLang})
+             })
+             if (response.ok){
+                 console.log("Saved successful");
+             }
+         } catch(error){
+             console.error("Error Occured:", error);
+         }
     }
 
     async function save_code(){
-        const response = await fetch('localhost:8080/api', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: "include",
-            body: JSON.stringify({event: 'save_code', language: null})
-        })
+        try{
+           const response = await fetch('localhost:8080/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                body: JSON.stringify({event: 'save_code', language: null})
+            })
+            if (response.ok){
+                console.log("Saved successful");
+            }
+        } catch(error){
+            console.error("Error Occured:", error);
+        }
     }
 
 
