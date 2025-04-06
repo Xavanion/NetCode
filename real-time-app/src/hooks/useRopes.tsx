@@ -8,7 +8,6 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
   const rope = useRef(RopeSequence.empty as RopeSequence<string>);
   const [text, setText] = useState('');
 
-
   // Do the operation on the rope
   const applyOp = (op: RopeOperation) => {
     let curRope = rope.current;
@@ -51,23 +50,18 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
     }
     setText(newText);
   }
-
+  
   // Recieve websocket changes
   useEffect(() => {
     if (!socket) return;
-  
-    const handleMessage = (e: MessageEvent) => {
-      const op: RopeOperation = JSON.parse(e.data);
+    console.log("USE EFFECT");
+    socket.onmessage = (e) => {
+      console.log("PRE OP");
+      const op: RopeOperation = JSON.parse(e.data)
+      console.log(op);
       applyOp(op);
-    };
-  
-    socket.addEventListener('message', handleMessage);
-  
-    return () => {
-      socket.removeEventListener('message', handleMessage);
-    };
-  }, [socket]);
-  
+    }
+  }, [socket])
 
   // Return text to text box
   return [text, updateText];
