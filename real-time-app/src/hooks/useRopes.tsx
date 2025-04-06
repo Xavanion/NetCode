@@ -14,7 +14,6 @@ export function useRopes(): [string, (newText:string) => void, string] {
 
   // Do the operation on the rope
   const applyOp = (op: RopeOperation) => {
-    console.log("Applying op");
     let curRope = rope.current;
     if (op.type === 'insert'){
       const before = curRope.slice(0,op.pos);
@@ -32,9 +31,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
 
   // Update text ref for textbox display
   function updateText(newText: string){
-    const oldText = (rope.current as any).flatten().join('');
-    console.log("Updating text");
-    
+    const oldText = (rope.current as any).flatten().join('');    
     // Progress i to where text is different
     let i = 0;
     while (i < newText.length && i < oldText.length && newText[i] === oldText[i]){
@@ -61,22 +58,23 @@ export function useRopes(): [string, (newText:string) => void, string] {
   useEffect(() => {
     if (!socket.current) return;
     socket.current.onmessage = (e) => {
-      const data = JSON.parse(e.data)
-      console.log(data);
-      switch (data.Event) {
+      console.log("Raw socket data:", e);
+      const data = JSON.parse(e.data);
+      switch (data.event) {
         case 'input_update':
-          const op: RopeOperation = data.Update;
+          const op: RopeOperation = data.update;
           applyOp(op);    
           break;
         case 'output_update':
-          const output = data.Update;
+          const output = data.update;
           setOutput(output);
           break;
         default:
+          console.warn("Unknown WebSocket event:", data);
           return;
       }
     }
-  }, [socket])
+  }, [socket.current])
 
   // Return text to text box
   return [text, updateText, outputText];

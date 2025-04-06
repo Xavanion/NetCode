@@ -10,26 +10,25 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Room struct{
-	ID string
+type Room struct {
+	ID                string
 	activeConnections map[*websocket.Conn]bool
-	con_mu sync.Mutex
-	mainText []byte 
+	con_mu            sync.Mutex
+	mainText          []byte
 }
 type RoomManager struct {
 	Rooms map[string]*Room
-	mu sync.RWMutex
+	mu    sync.RWMutex
 }
 type ApiRequest struct {
-	Event  string `json:"event"`
+	Event    string `json:"event"`
 	Language string `json:"language"`
 }
 
 type sendUpdateJson struct {
-	Event  string `json:"event"`
-	Message string `json:"update"`
+	Event  string      `json:"event"`
+	Update interface{} `json:"update"`
 }
-
 
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
@@ -37,13 +36,13 @@ func NewRoomManager() *RoomManager {
 	}
 }
 
-func (manager *RoomManager) CreateRoom(roomid string){
+func (manager *RoomManager) CreateRoom(roomid string) {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	manager.Rooms[roomid] = &Room{
-		ID: roomid,
+		ID:                roomid,
 		activeConnections: make(map[*websocket.Conn]bool),
-		mainText: make([]byte, 0), 
+		mainText:          make([]byte, 0),
 	}
 }
 
@@ -51,57 +50,61 @@ func (manager *RoomManager) GetRoom(id string) *Room {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
 	room := manager.Rooms[id]
-	return room 
+	return room
 }
 
-func (room *Room) FileApiRequest(requestData ApiRequest){
-	switch requestData.Event{	
-		case "run_code":
-			//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
-			out := codehandler.Run_file("one", string(requestData.Language), "main-py-", string(room.mainText))
-			fmt.Printf("Output: %s\n", out)
-		case "code_save":
+func (room *Room) FileApiRequest(requestData ApiRequest) {
+	switch requestData.Event {
+	case "run_code":
+		//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
+		out := codehandler.Run_file("one", string(requestData.Language), "main-py-", string(room.mainText))
+		fmt.Printf("Output: %s\n", out)
+	case "code_save":
 	}
 }
 
-func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string){
+func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string) {
 	room.con_mu.Lock()
 	defer room.con_mu.Unlock()
 	fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
 		//if conn == startconn{
-		//	continue	
+		//	continue
 		//}
+		var parsed map[string]interface{}
+		json.Unmarshal([]byte(message), &parsed)
+
 		msg := sendUpdateJson{
 			Event:  "input_update",
-			Message: message,
+			Update: parsed,
 		}
+
 		jsonData, err := json.Marshal(msg)
 		if err != nil {
 			log.Println("Failed to marshall update message json: ", err)
 		}
 		if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
-			conn.Close() // Close connection if it fails to send a message
+			conn.Close()                         // Close connection if it fails to send a message
 			delete(room.activeConnections, conn) // Remove broken connection
 		}
 	}
 }
 
-func (room *Room) handleMessages(message string, conn *websocket.Conn){
+func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	// Turn the raw text back into a usable type
 	var json_mess map[string]any
 	json.Unmarshal([]byte(message), &json_mess)
 	//fmt.Println(json_mess)
 	fmt.Println(message)
-	switch json_mess["event"]{
+	switch json_mess["event"] {
 	case "text_update":
 		if json_mess["type"] == "insert" {
 			fmt.Println(json_mess["value"].(string))
 			position := int(json_mess["pos"].(float64))
-			if(position > len(room.mainText)){
+			if position > len(room.mainText) {
 				position -= 1
 			}
-			room.mainText = insertByte(room.mainText, position, []byte(json_mess["value"].(string))[0]) 
+			room.mainText = insertByte(room.mainText, position, []byte(json_mess["value"].(string))[0])
 		} else if json_mess["type"] == "delete" {
 			position := int(json_mess["from"].(float64))
 			room.mainText = deleteByte(room.mainText, position)
@@ -120,7 +123,7 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Unlock()
 
 	if err := conn.WriteMessage(websocket.TextMessage, []byte("sup")); err != nil {
-		conn.Close() // Close connection if it fails to send a message
+		conn.Close()                         // Close connection if it fails to send a message
 		delete(room.activeConnections, conn) // Remove broken connection
 	}
 
@@ -140,37 +143,33 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Unlock()
 }
 
-
 func insertByte(slice []byte, index int, value byte) []byte {
-    // Ensure index is valid
-    if index < 0 || index > len(slice) {
-        log.Println("Index out of range")
+	// Ensure index is valid
+	if index < 0 || index > len(slice) {
+		log.Println("Index out of range")
 		return slice
-    }
+	}
 
-    // Check if slice needs reallocation
-    if len(slice) == cap(slice) {
-        // Double the capacity to minimize future reallocations
-        newSlice := make([]byte, len(slice), cap(slice)*2+1)
-        copy(newSlice, slice)
-        slice = newSlice
-    }
+	// Check if slice needs reallocation
+	if len(slice) == cap(slice) {
+		// Double the capacity to minimize future reallocations
+		newSlice := make([]byte, len(slice), cap(slice)*2+1)
+		copy(newSlice, slice)
+		slice = newSlice
+	}
 
-    // Insert the byte at the given index
-    slice = append(slice[:index], append([]byte{value}, slice[index:]...)...)
-    return slice
+	// Insert the byte at the given index
+	slice = append(slice[:index], append([]byte{value}, slice[index:]...)...)
+	return slice
 }
 
 func deleteByte(slice []byte, index int) []byte {
-    // Ensure index is valid
-    if index < 0 || index > len(slice) {
-        fmt.Println("Index out of range")
+	// Ensure index is valid
+	if index < 0 || index > len(slice) {
+		fmt.Println("Index out of range")
 		return slice
-    }
+	}
 
-    // Remove the byte at the given index
-    return append(slice[:index], slice[index+1:]...)
+	// Remove the byte at the given index
+	return append(slice[:index], slice[index+1:]...)
 }
-
-
-
