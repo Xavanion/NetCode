@@ -68,9 +68,10 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string) {
 	defer room.con_mu.Unlock()
 	fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
-		//if conn == startconn{
-		//	continue
-		//}
+		fmt.Println("Sending message to:", conn.RemoteAddr())
+		if conn == startconn{
+			continue
+		}
 		var parsed map[string]interface{}
 		json.Unmarshal([]byte(message), &parsed)
 
@@ -84,6 +85,7 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, message string) {
 			log.Println("Failed to marshall update message json: ", err)
 		}
 		if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+			log.Println("Failed to send message ", err)
 			conn.Close()                         // Close connection if it fails to send a message
 			delete(room.activeConnections, conn) // Remove broken connection
 		}
@@ -121,6 +123,7 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Lock()
 	room.activeConnections[conn] = true
 	room.con_mu.Unlock()
+	defer conn.Close()
 
 	if err := conn.WriteMessage(websocket.TextMessage, []byte("sup")); err != nil {
 		conn.Close()                         // Close connection if it fails to send a message

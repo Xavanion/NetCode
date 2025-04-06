@@ -62,7 +62,6 @@ func main() {
 				return
 			}
 			// close connection when we're done
-			defer conn.Close()
 			roomManager.GetRoom("one").NewConnection(conn)
 		})
 	}
