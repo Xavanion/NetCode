@@ -64,8 +64,10 @@ func Run_file(room_id string, language string, filename string, content string) 
 		fmt.Println(outputPath)
 		// cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath)
 	case "Java":
+		// Remove the ".java" extension
+		outputPath := path[:len(path)-5]
 		// Compile the Java file
-		cmd = exec.Command("bash", "-c", "javac "+path+"; java -cp "+filepath.Dir(path)+" "+filename+room_id+"; rm "+path)
+		cmd = exec.Command("bash", "-c", "javac "+path+"; java -cp "+filepath.Dir(path)+" "+outputPath+"; rm "+path)
 	case "C++":
 		// Remove the ".cpp" extension
 		outputPath := path[:len(path)-4] // C++ files have the .cpp extension
