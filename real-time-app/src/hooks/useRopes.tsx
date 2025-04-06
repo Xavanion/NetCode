@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import RopeSequence from 'rope-sequence';
 
 // Define types that the rope can do
-type RopeOperation ={ type: 'insert'; pos: number; value: string } | { type: 'delete'; from: number; to: number };
+type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: string } | { event: 'text_update'; type: 'delete'; from: number; to: number };
 
 export function useRopes(socket: WebSocket | null): [string, (newText:string) => void] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>);
@@ -40,12 +40,12 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
     if (oldText.length > newText.length){
       // Deletion
       let difference = oldText.length - newText.length;
-      const op: RopeOperation = {type: 'delete', from: i, to: i+difference};
+      const op: RopeOperation = {event: 'text_update', type: 'delete', from: i, to: i+difference};
       applyOp(op);
       socket?.send(JSON.stringify(op));
     } else {
       // Insertion
-      const op: RopeOperation = { type: 'insert', pos: i, value:newText[i]}
+      const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:newText[i]}
       applyOp(op);
       socket?.send(JSON.stringify(op));
     }
