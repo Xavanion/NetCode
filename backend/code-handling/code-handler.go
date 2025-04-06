@@ -93,7 +93,7 @@ func Run_file(room_id string, language string, filename string, content string) 
 		cmd = exec.Command("bash", "-c", "rustc "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
 	case "TypeScript":
 		outputPath := path[:len(path)-3] // Remove the ".ts" extension
-		cmd = exec.Command("bash", "-c", "tsc "+path+"; node "+outputPath+".js; rm "+outputPath+".js "+path)
+		cmd = exec.Command("bash", "-c", "tsc "+path+" && node "+outputPath+".js && rm "+outputPath+".js "+path)
 	case "C#":
 		outputPath := path[:len(path)-4] // Remove the ".csproj" extension
 		cmd = exec.Command("bash", "-c", "dotnet build "+path+"; dotnet run --project "+outputPath+"; rm "+path)
