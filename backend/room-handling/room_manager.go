@@ -9,8 +9,6 @@ import (
 	"os"
 	"context"
 	"github.com/joho/godotenv"
-	"path/filepath"
-
 
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
 	genai "github.com/google/generative-ai-go/genai"
@@ -38,6 +36,16 @@ type ApiRequest struct {
 type sendUpdateJson struct {
 	Event  string      `json:"event"`
 	Update interface{} `json:"update"`
+}
+type Content struct{
+    Parts []string `json:Parts`
+    Role string `json:Role`
+} 
+type Candidates struct {
+    Content *Content `json:Content`
+}
+type ContentResponse struct{
+    Candidates *[]Candidates `json:Candidates`
 }
 
 func NewRoomManager() *RoomManager {
@@ -84,28 +92,45 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 		fmt.Printf("Output: %s\n", out)
 	case "code_save":
 	case "code_review":
-		ctx := context.Background()
 		// Access your API key as an environment variable 
 		fmt.Println("HIT GEMINI")
-		err := godotenv.Load(filepath.Join("..", "..", ".env"))
+		err := godotenv.Load(".env")
 		if err != nil {
 			log.Printf("Error loading .env file: %v", err)
 			return
 		}
 
+		apiKey := os.Getenv("GEMINI_API_KEY")
+		if apiKey == "" {
+			log.Fatal("GEMINI_API_KEY environment variable is not set!")
+		}
+		ctx := context.Background()
 		client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GEMINI_API_KEY")))
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		defer client.Close()
 
-		model := client.GenerativeModel("gemini-2.0-flash")
-
-		resp, err := model.GenerateContent(ctx, genai.Text("Write a story about a magic backpack."))
+		model := client.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
+		resp, err := model.GenerateContent(ctx, genai.Text("Give constructive feedback over the following code:\n"+string(room.mainText)))
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(resp)
+		marshalResponse, _ := json.MarshalIndent(resp, "", "  ")
+		fmt.Println(string(marshalResponse))
+		var generateResponse ContentResponse
+		if err := json.Unmarshal(marshalResponse, &generateResponse); err !=nil{
+			log.Fatal(err)
+		}
+		var whole string
+		for _, cad := range *generateResponse.Candidates{
+			if cad.Content !=nil{
+				for _, part := range cad.Content.Parts{
+					whole += part
+				}
+			}
+		}
+		fmt.Println("out:", whole)
 	}
 }
 
