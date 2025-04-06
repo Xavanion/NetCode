@@ -23,7 +23,6 @@ function Toolbar(){
                  headers: {
                      'Content-Type': 'application/json'
                  },
-                 credentials: "include",
                  body: JSON.stringify({event: 'run_code', language: selectedLang})
              })
              if (response.ok){
@@ -41,7 +40,6 @@ function Toolbar(){
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: "include",
                 body: JSON.stringify({event: 'save_code', language: null})
             })
             if (response.ok){

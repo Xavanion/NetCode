@@ -28,6 +28,7 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
   // Update text ref for textbox display
   function updateText(newText: string){
     const oldText = (rope.current as any).flatten().join('');
+    console.log('UPDATE CALLED');
     
     // Progress i to where text is different
     let i = 0;
