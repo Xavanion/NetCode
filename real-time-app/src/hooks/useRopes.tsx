@@ -10,7 +10,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
   const [text, setText] = useState('');
   const [outputText, setOutput] = useState('');
   const socket = useWS();
-  const debug: boolean = false;
+  const debug: boolean = true;
 
 
   // Do the operation on the rope
@@ -69,30 +69,48 @@ export function useRopes(): [string, (newText:string) => void, string] {
   
   // Recieve websocket changes
   useEffect(() => {
-    if (!socket.current) return;
-    socket.current.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (debug){
-        console.log("Raw socket data:", e);
-        console.log("Parsed Socket data", data);
-        console.log("Data", data.event);
-        console.log("Op", data.update);
-      }
-      switch (data.event) {
-        case 'input_update':
-          const op: RopeOperation = data.update;
-          applyOp(op);    
-          break;
-        case 'output_update':
-          const output = data.update;
-          setOutput(output);
-          break;
-        default:
-          console.warn("Unknown WebSocket event:", data);
-          return;
-      }
+    let interval: ReturnType<typeof setInterval>;
+  
+    function attachOnMessage(ws: WebSocket) {
+      if (debug) console.log('WebSocket connected, attaching onmessage handler');
+  
+      ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if (debug) {
+          console.log("Raw socket data:", e);
+          console.log("Parsed Socket data", data);
+          console.log("Data", data.event);
+          console.log("Op", data.update);
+        }
+  
+        switch (data.event) {
+          case 'input_update':
+            const op: RopeOperation = data.update;
+            applyOp(op);
+            break;
+          case 'output_update':
+            setOutput(data.update);
+            break;
+          default:
+            console.warn("Unknown WebSocket event:", data);
+        }
+      };
     }
-  }, [socket.current])
+  
+    const tryAttach = () => {
+      const ws = socket.current;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        attachOnMessage(ws);
+        clearInterval(interval);
+      }
+    };
+  
+    tryAttach(); // Try immediately
+    interval = setInterval(tryAttach, 100); // Retry every 100ms
+  
+    return () => clearInterval(interval); // Cleanup
+  }, [socket.current]);
+  
 
   // Return text to text box
   return [text, updateText, outputText];
