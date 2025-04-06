@@ -5,10 +5,12 @@ import RopeSequence from 'rope-sequence';
 // Define types that the rope can do
 type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: string } | { event: 'text_update'; type: 'delete'; from: number; to: number };
 
-export function useRopes(): [string, (newText:string) => void] {
+export function useRopes(): [string, (newText:string) => void, string] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>);
   const [text, setText] = useState('');
+  const [outputText, setOutput] = useState('');
   const socket = useWS()
+
 
   // Do the operation on the rope
   const applyOp = (op: RopeOperation) => {
@@ -57,12 +59,23 @@ export function useRopes(): [string, (newText:string) => void] {
   useEffect(() => {
     if (!socket.current) return;
     socket.current.onmessage = (e) => {
-      const op: RopeOperation = JSON.parse(e.data)
-      console.log(op);
-      applyOp(op);
+      const data = JSON.parse(e.data)
+      console.log(e);
+      switch (data.event) {
+        case 'text_update':
+          const op: RopeOperation = data.update;
+          applyOp(op);    
+          break;
+        case 'output_update':
+          const output = data.update;
+          setOutput(output);
+          break;
+        default:
+          return;
+      }
     }
   }, [socket])
 
   // Return text to text box
-  return [text, updateText];
+  return [text, updateText, outputText];
 }
