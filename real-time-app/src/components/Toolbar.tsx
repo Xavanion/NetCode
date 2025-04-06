@@ -26,7 +26,7 @@ function Toolbar(){
                  body: JSON.stringify({event: 'run_code', language: selectedLang})
              })
              if (response.ok){
-                 console.log("Saved successful");
+                 console.log("Run successful");
              }
          } catch(error){
              console.error("Error Occured:", error);
