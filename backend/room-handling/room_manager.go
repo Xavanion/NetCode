@@ -8,6 +8,9 @@ import (
 	"time"
 	"os"
 	"context"
+	"github.com/joho/godotenv"
+	"path/filepath"
+
 
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
 	genai "github.com/google/generative-ai-go/genai"
@@ -82,8 +85,15 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 	case "code_save":
 	case "code_review":
 		ctx := context.Background()
-		// Access your API key as an environment variable (see "Set up your API key" above)
-		client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("AIzaSyA7pysrKTjq_w2Aug-NjWaE2BQ9PpjIlVM")))
+		// Access your API key as an environment variable 
+		fmt.Println("HIT GEMINI")
+		err := godotenv.Load(filepath.Join("..", "..", ".env"))
+		if err != nil {
+			log.Printf("Error loading .env file: %v", err)
+			return
+		}
+
+		client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GEMINI_API_KEY")))
 		if err != nil {
 			log.Fatal(err)
 		}
