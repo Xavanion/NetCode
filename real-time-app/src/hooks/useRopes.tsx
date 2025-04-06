@@ -14,6 +14,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
 
   // Do the operation on the rope
   const applyOp = (op: RopeOperation) => {
+    console.log("Applying op");
     let curRope = rope.current;
     if (op.type === 'insert'){
       const before = curRope.slice(0,op.pos);
@@ -32,6 +33,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
   // Update text ref for textbox display
   function updateText(newText: string){
     const oldText = (rope.current as any).flatten().join('');
+    console.log("Updating text");
     
     // Progress i to where text is different
     let i = 0;
@@ -60,14 +62,14 @@ export function useRopes(): [string, (newText:string) => void, string] {
     if (!socket.current) return;
     socket.current.onmessage = (e) => {
       const data = JSON.parse(e.data)
-      console.log(e);
-      switch (data.event) {
-        case 'text_update':
-          const op: RopeOperation = data.update;
+      console.log(data);
+      switch (data.Event) {
+        case 'input_update':
+          const op: RopeOperation = data.Update;
           applyOp(op);    
           break;
         case 'output_update':
-          const output = data.update;
+          const output = data.Update;
           setOutput(output);
           break;
         default:
