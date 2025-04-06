@@ -1,8 +1,9 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
@@ -24,8 +25,6 @@ var upgrader = websocket.Upgrader{
 func main() {
 	// Create a new manager to handler all rooms that get spun off later
 	roomManager := roomhandler.NewRoomManager()
-	// default room for now
-	roomManager.CreateRoom("one")
 
 	router := gin.Default()
 
@@ -52,7 +51,12 @@ func main() {
 				return
 			}
 			// Pass the parsed data to your function for processing
-			roomManager.GetRoom("one").FileApiRequest(requestData)
+			room, exists := roomManager.GetRoom("one")
+			fmt.Println("AAA")
+			if(exists){
+				fmt.Println("Running api")
+				room.FileApiRequest(requestData)
+			}
 			c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
 		})
 		// Websocket endpoint
@@ -68,7 +72,13 @@ func main() {
 				log.Println("Error reading message:", err)
 			}
 			log.Print("room: ", string(message))
-			roomManager.GetRoom(string(message)).NewConnection(conn)
+			room, exists := roomManager.GetRoom(string(message))
+			if(exists){
+				room.NewConnection(conn)
+			} else {
+				room := roomManager.CreateRoom(string(message))
+				room.NewConnection(conn)
+			}
 		})
 	}
 	router.Run(":8080")

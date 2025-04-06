@@ -37,7 +37,7 @@ func NewRoomManager() *RoomManager {
 	}
 }
 
-func (manager *RoomManager) CreateRoom(roomid string) {
+func (manager *RoomManager) CreateRoom(roomid string) *Room{
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	manager.Rooms[roomid] = &Room{
@@ -45,13 +45,18 @@ func (manager *RoomManager) CreateRoom(roomid string) {
 		activeConnections: make(map[*websocket.Conn]bool),
 		mainText:          make([]byte, 0),
 	}
+	return manager.Rooms[roomid]
 }
 
-func (manager *RoomManager) GetRoom(id string) *Room {
+func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
-	room := manager.Rooms[id]
-	return room
+	if(manager.Rooms[id] == nil){
+		return nil, false
+	}else {
+		room := manager.Rooms[id]
+		return room, true
+	}
 }
 
 func (room *Room) FileApiRequest(requestData ApiRequest) {
