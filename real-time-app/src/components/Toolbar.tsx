@@ -18,7 +18,7 @@ function Toolbar(){
 
     async function run_code(){
         try{
-            const response = await fetch('localhost:8080/api', {
+            const response = await fetch('http://localhost:8080/api', {
                  method: 'POST',
                  headers: {
                      'Content-Type': 'application/json'
@@ -35,7 +35,7 @@ function Toolbar(){
 
     async function save_code(){
         try{
-           const response = await fetch('localhost:8080/api', {
+           const response = await fetch('http://localhost:8080/api', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
