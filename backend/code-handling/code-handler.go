@@ -62,6 +62,3 @@ func Run_file(room_id string, language string, filename string, content string){
 	fmt.Println(string(output))
 }
 
-func Test() int{
-	return -1
-}

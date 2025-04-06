@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -20,7 +19,11 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	roomhandler.Testing()
+	// Create a new manager to handler all rooms that get spun off later
+	roomManager := roomhandler.NewRoomManager()
+	// default room for now
+	roomManager.CreateRoom("one")
+
 	router := gin.Default()
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
@@ -42,7 +45,7 @@ func main() {
 			}
 			// close connection when we're done
 			defer conn.Close()
-			roomhandler.NewConnection(conn)
+			roomManager.GetRoom("one").NewConnection(conn)
 		})
 	}
 	router.Run(":8080")

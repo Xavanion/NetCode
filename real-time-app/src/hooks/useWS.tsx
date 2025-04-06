@@ -6,7 +6,6 @@ export const useWS = () => {
     socketRef.current = new WebSocket("ws://localhost:8080/api/ws");
     socketRef.current.onopen = () => {
       console.log("Connected");
-      socketRef.current?.send("Hello server!");
     };
     socketRef.current.onmessage = (event) => {
       console.log("Received:", event.data);
