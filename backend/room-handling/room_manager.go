@@ -51,13 +51,11 @@ func (manager *RoomManager) GetRoom(id string) *Room {
 
 func (room *Room) FileApiRequest(requestData ApiRequest){
 	switch requestData.Event{	
-	case "run_code":
-			fmt.Println("Hit: ", requestData.Language)	
-			fmt.Println(string(room.mainText))
-			fmt.Println(requestData)
+		case "run_code":
+			//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
 			out := codehandler.Run_file("one", string(requestData.Language), "main-py-", string(room.mainText))
-			fmt.Println(out)
-	case "code_save":
+			fmt.Printf("Output: %s\n", out)
+		case "code_save":
 	}
 }
 

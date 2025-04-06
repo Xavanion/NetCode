@@ -19,10 +19,11 @@ func Run_file(room_id string, language string, filename string, content string) 
 
 	// Construct the correct filetype
 	switch language{
-		case "c": path += ".c"
-		case "python": path += ".py"
+		case "C": path += ".c"
+		case "Python": path += ".py"
 	}
 
+	//fmt.Println(path)
 	new_file, e := os.Create(path) 
     if e != nil { 
         log.Println("Error Creating file", e) 
@@ -43,14 +44,14 @@ func Run_file(room_id string, language string, filename string, content string) 
 	// Figure out how we should run the executable 
 	var cmd *exec.Cmd
 	switch language{
-		case "python":
+		case "Python":
 			// Just point python3 to the file
-			cmd = exec.Command("bash", "-c", "python3" + path +"; " + "rm "+path)
-		case "c":
+			cmd = exec.Command("bash", "-c", "python3 " + path +"; " + "rm "+path)
+		case "C":
 			// Remove the ".c" extension
 			outputPath := path[:len(path)-2] 
 			// Compile to the output path
-			cmd = exec.Command("bash", "-c", "gcc  "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
+			cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
 			fmt.Println(outputPath)
 	}
 	// Run the command and store the standard output
@@ -59,8 +60,6 @@ func Run_file(room_id string, language string, filename string, content string) 
 		log.Println("Error executing command:", err)
 		return "System error executing command"
 	}
-	fmt.Println(string(output))
-
 	return string(output)
 }
 
