@@ -9,7 +9,8 @@ export function useRopes(): [string, (newText:string) => void, string] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>);
   const [text, setText] = useState('');
   const [outputText, setOutput] = useState('');
-  const socket = useWS()
+  const socket = useWS();
+  const debug: boolean = false;
 
 
   // Do the operation on the rope
@@ -26,12 +27,24 @@ export function useRopes(): [string, (newText:string) => void, string] {
     }
 
     rope.current = curRope;
-    setText((rope.current as any).flatten().join('')); // maybe rope.current.toString() if errors
+    const curText = ropeToString(rope.current);
+    setText(curText); // maybe rope.current.toString() if errors
   }
+
+
+  function ropeToString(rope: RopeSequence<string>): string {
+    const flattened: string[] = [];
+    rope.forEach((value: string) => {
+      flattened.push(value);
+    });
+    return flattened.join('');
+  }
+  
+  
 
   // Update text ref for textbox display
   function updateText(newText: string){
-    const oldText = (rope.current as any).flatten().join('');    
+    const oldText = ropeToString(rope.current);    
     // Progress i to where text is different
     let i = 0;
     while (i < newText.length && i < oldText.length && newText[i] === oldText[i]){
@@ -58,8 +71,13 @@ export function useRopes(): [string, (newText:string) => void, string] {
   useEffect(() => {
     if (!socket.current) return;
     socket.current.onmessage = (e) => {
-      console.log("Raw socket data:", e);
       const data = JSON.parse(e.data);
+      if (debug){
+        console.log("Raw socket data:", e);
+        console.log("Parsed Socket data", data);
+        console.log("Data", data.event);
+        console.log("Op", data.update);
+      }
       switch (data.event) {
         case 'input_update':
           const op: RopeOperation = data.update;
