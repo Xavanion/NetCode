@@ -15,6 +15,7 @@ type Room struct {
 	activeConnections map[*websocket.Conn]bool
 	con_mu            sync.Mutex
 	mainText          []byte
+	text_mu			  sync.Mutex
 }
 type RoomManager struct {
 	Rooms map[string]*Room
@@ -125,10 +126,10 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 			if position > len(room.mainText) {
 				position -= 1
 			}
-			room.mainText = insertBytes(room.mainText, position, []byte(json_mess["value"].(string)))
+			room.insertBytes(position, []byte(json_mess["value"].(string)))
 		} else if json_mess["type"] == "delete" {
 			position := int(json_mess["from"].(float64))
-			room.mainText = deleteByte(room.mainText, position)
+			room.deleteByte(position)
 		}
 		room.broadcastUpdate(conn, "input_update", message, true)
 	default:
@@ -185,11 +186,14 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Unlock()
 }
 
-func insertByte(slice []byte, index int, value byte) []byte {
+func (room *Room) insertBytes( index int, value []byte) {
+	slice := room.mainText
+	room.text_mu.Lock()
+	defer room.text_mu.Unlock()
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
 		log.Println("Index out of range")
-		return slice
+		return 
 	}
 
 	// Check if slice needs reallocation
@@ -201,17 +205,21 @@ func insertByte(slice []byte, index int, value byte) []byte {
 	}
 
 	// Insert the byte at the given index
-	slice = append(slice[:index], append([]byte{value}, slice[index:]...)...)
-	return slice
+	slice = append(slice[:index], append(value, slice[index:]...)...)
+	room.mainText =  slice
 }
 
-func deleteByte(slice []byte, index int) []byte {
+func (room *Room) deleteByte(index int) {
+	slice := room.mainText
+	room.text_mu.Lock()
+	defer room.text_mu.Unlock()
+
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
 		fmt.Println("Index out of range")
-		return slice
+		return 
 	}
 
 	// Remove the byte at the given index
-	return append(slice[:index], slice[index+1:]...)
+	room.mainText = append(slice[:index], slice[index+1:]...)
 }

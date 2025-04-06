@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"log"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
@@ -61,8 +62,13 @@ func main() {
 			if err != nil {
 				return
 			}
-			// close connection when we're done
-			roomManager.GetRoom("one").NewConnection(conn)
+			// Wait for the socket to request a room
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				log.Println("Error reading message:", err)
+			}
+			log.Print("room: ", string(message))
+			roomManager.GetRoom(string(message)).NewConnection(conn)
 		})
 	}
 	router.Run(":8080")
