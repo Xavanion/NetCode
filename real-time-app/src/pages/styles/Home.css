@@ -1,19 +1,16 @@
 .pageContainer {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  .boxContainer {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: calc(100vh - 80px);
-  }
-  .inputBox{
-    width: 50%;
-
-
-
-  }
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.boxContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: calc(100vh - 150px);
+}
+.inputBox{
+  width: 50%;
+}

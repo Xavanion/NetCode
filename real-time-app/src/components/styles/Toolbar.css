@@ -8,11 +8,13 @@
     display: flex;
   }
   .toolbar li {
-    margin-right: 10px;
+    margin-left: 10px;
   }
   .toolbar button {
     padding: 10px 20px;
     cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
     border: 1px solid #ccc; /* Border around the button */
     background-color: #f5f5f5; /* Light gray background */
     color: #333; /* Dark text color for readability */
