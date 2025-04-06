@@ -7,7 +7,7 @@ type Props = {
 
 function Outputbox({ curText, activeOutput,  }: Props) {
   return (
-    <div className="outputboxContainer">
+    <div className="outputbox-container">
 
       <textarea
         readOnly
