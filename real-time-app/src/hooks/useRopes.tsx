@@ -55,11 +55,19 @@ export function useRopes(socket: WebSocket | null): [string, (newText:string) =>
   // Recieve websocket changes
   useEffect(() => {
     if (!socket) return;
-    socket.onmessage = (e) => {
-      const op: RopeOperation = JSON.parse(e.data)
+  
+    const handleMessage = (e: MessageEvent) => {
+      const op: RopeOperation = JSON.parse(e.data);
       applyOp(op);
-    }
-  }, [text])
+    };
+  
+    socket.addEventListener('message', handleMessage);
+  
+    return () => {
+      socket.removeEventListener('message', handleMessage);
+    };
+  }, [socket]);
+  
 
   // Return text to text box
   return [text, updateText];
