@@ -58,12 +58,12 @@ func (room *Room) FileApiRequest(requestData ApiRequest) {
 	case "run_code":
 		//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
 		/*codehandler.Run_file("1", "C", "main", `
-#include <stdio.h>
+		#include <stdio.h>
 
-int main(){
-    printf("Hello World");
-    return 0;
-}`)*/
+		int main(){
+		    printf("Hello World");
+		    return 0;
+		}`)*/
 		out := codehandler.Run_file("one", string(requestData.Language), "main-", string(room.mainText))
 		room.broadcastUpdate(nil, "output_update", out, false)
 		fmt.Printf("Output: %s\n", out)
@@ -77,23 +77,23 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, messa
 	fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
 		fmt.Println("Sending message to:", conn.RemoteAddr())
-		if conn == startconn{
+		if conn == startconn {
 			continue
 		}
 		var jsonData []byte
 		var err error
-		if(isParsed){
+		if isParsed {
 			var parsed map[string]interface{}
 			json.Unmarshal([]byte(message), &parsed)
 
 			msg := sendUpdateJson{
-				Event: event,
+				Event:  event,
 				Update: parsed,
 			}
 			jsonData, err = json.Marshal(msg)
 		} else {
 			msg := sendUpdateJson{
-				Event: event,
+				Event:  event,
 				Update: message,
 			}
 			jsonData, err = json.Marshal(msg)
@@ -125,7 +125,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 			if position > len(room.mainText) {
 				position -= 1
 			}
-			room.mainText = insertByte(room.mainText, position, []byte(json_mess["value"].(string))[0])
+			room.mainText = insertBytes(room.mainText, position, []byte(json_mess["value"].(string)))
 		} else if json_mess["type"] == "delete" {
 			position := int(json_mess["from"].(float64))
 			room.mainText = deleteByte(room.mainText, position)
@@ -135,6 +135,14 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 		log.Print("Invalid json event")
 	}
 	fmt.Printf("Body:%s\n", string(room.mainText))
+}
+
+func insertBytes(slice []byte, index int, values []byte) []byte {
+	if index < 0 || index > len(slice) {
+		log.Println("Index out of range for insertBytes")
+		return slice
+	}
+	return append(slice[:index], append(values, slice[index:]...)...)
 }
 
 func (room *Room) NewConnection(conn *websocket.Conn) {
