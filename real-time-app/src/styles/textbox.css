@@ -1,0 +1,19 @@
+.textbox-container {
+    flex: 1;
+    display: flex;
+  }
+  
+.textarea {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  font-family: 'Fira Code', monospace;
+  color: #d4d4d4;
+  background-color: #1e1e1e;
+  border: none;
+  outline: none;
+  resize: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+  

@@ -1,9 +1,14 @@
+import './App.css'
+import './styles/Navbar.css'
+import './styles/Toolbar.css'
+import './styles/outputBox.css'
+import './styles/textbox.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Account from './pages/Account';
 import Navbar from './components/Navbar';
 import CreateAccount from './pages/CreateAccount';
-import './App.css'
+
 
 function App() {
   return (

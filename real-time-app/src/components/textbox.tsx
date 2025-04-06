@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRopes } from '../hooks/useRopes';
-import './styles/textbox.css';
+import '../styles/textbox.css';
 
 function Textbox() {
   const [text, setText] = useRopes();

@@ -1,4 +1,4 @@
-import './styles/outputBox.css';
+import '../styles/outputBox.css';
 
 function Outputbox() {
   return (

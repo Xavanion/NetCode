@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import './styles/Toolbar.css';
+import '../styles/Toolbar.css';
 
 function Toolbar(){
     const  [selectedLang, setLanguage] = useState('C');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prev => !prev);
 
-    const languages = ['C', 'Python', 'C++', 'Java'];
+    const languages = ['C', 'Python'];
 
     const selectLanguage = (lang: string) => {
         setLanguage(lang);

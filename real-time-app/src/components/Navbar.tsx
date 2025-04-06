@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import logo from '../assets/site_logo.png';
-import './styles/Navbar.css';
+import '../styles/Navbar.css';
 
 function Navbar(){
     return(
