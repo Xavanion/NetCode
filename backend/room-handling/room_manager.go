@@ -95,9 +95,9 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, message string, isParsed bool) {
 	room.con_mu.Lock()
 	defer room.con_mu.Unlock()
-	fmt.Println(room.activeConnections)
+	//fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
-		fmt.Println("Sending message to:", conn.RemoteAddr())
+		//fmt.Println("Sending message to:", conn.RemoteAddr())
 		if conn == startconn {
 			continue
 		}
@@ -137,11 +137,11 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	var json_mess map[string]any
 	json.Unmarshal([]byte(message), &json_mess)
 	//fmt.Println(json_mess)
-	fmt.Println(message)
+	//fmt.Println(message)
 	switch json_mess["event"] {
 	case "text_update":
 		if json_mess["type"] == "insert" {
-			fmt.Println(json_mess["value"].(string))
+			//fmt.Println(json_mess["value"].(string))
 			position := int(json_mess["pos"].(float64))
 			if position > len(room.mainText) {
 				position -= 1

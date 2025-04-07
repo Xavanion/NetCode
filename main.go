@@ -45,7 +45,6 @@ func main() {
 	{
 		api.POST("/", func(c *gin.Context) {
 			var requestData roomhandler.ApiRequest 
-			fmt.Println("HIT")
 			if err := c.ShouldBindJSON(&requestData); err != nil {
 				// If the binding fails, return an error
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -54,7 +53,6 @@ func main() {
 			// Check if the room exists, if it does we tell that room to do the api request
 			room, exists := roomManager.GetRoom(requestData.Room)
 			if(exists){
-				fmt.Println("Running api")
 				room.FileApiRequest(requestData, c)
 			}
 		})

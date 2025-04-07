@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 
@@ -62,10 +61,9 @@ func Gemini_Request(code string) (string, error){
 			Make sure all sections use Markdown formatting properly (e.g., headers, bullet points, code blocks).
 			Aim to be clear, friendly, and professional, as if giving feedback to a peer:\n`+code))
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	marshalResponse, _ := json.MarshalIndent(resp, "", "  ")
-	fmt.Println(string(marshalResponse))
 	var generateResponse ContentResponse
 	if err := json.Unmarshal(marshalResponse, &generateResponse); err !=nil{
 		log.Fatal(err)
