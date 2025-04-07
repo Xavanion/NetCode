@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -58,6 +57,13 @@ func main() {
 		})
 		// Websocket endpoint
 		api.GET("/ws", func(c *gin.Context) {
+			roomID := string(c.Query("room"))
+			if roomID == "" {
+				//c.JSON(http.StatusBadRequest, gin.H{"error": "room ID required"})
+				log.Print("Bad Request")
+				// default room id
+				roomID = "one"
+			}
 			// Upgrade GET request to a WebSocket
 			conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 			if err != nil {
@@ -69,11 +75,11 @@ func main() {
 				log.Println("Error reading message:", err)
 			}
 			log.Print("room: ", string(message))
-			room, exists := roomManager.GetRoom(string(message))
+			room, exists := roomManager.GetRoom(roomID)
 			if(exists){
 				room.NewConnection(conn)
 			} else {
-				room := roomManager.CreateRoom(string(message))
+				room := roomManager.CreateRoom(roomID)
 				room.NewConnection(conn)
 			}
 		})
