@@ -58,23 +58,18 @@ func main() {
 		// Websocket endpoint
 		api.GET("/ws", func(c *gin.Context) {
 			roomID := string(c.Query("room"))
+			log.Println(roomID, c.Query("room"))
 			if roomID == "" {
 				//c.JSON(http.StatusBadRequest, gin.H{"error": "room ID required"})
 				log.Print("Bad Request")
-				// default room id
-				roomID = "one"
+				return 
 			}
 			// Upgrade GET request to a WebSocket
 			conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 			if err != nil {
 				return
 			}
-			// Wait for the socket to request a room
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				log.Println("Error reading message:", err)
-			}
-			log.Print("room: ", string(message))
+			log.Print("room: ", string(roomID))
 			room, exists := roomManager.GetRoom(roomID)
 			if(exists){
 				room.NewConnection(conn)

@@ -81,7 +81,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
     function attachOnMessage(ws: WebSocket) {
       if (debug) console.log('WebSocket connected, attaching onmessage handler');
 	
-      socket.current?.send("one");
+      //socket.current?.send("one");
   
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);

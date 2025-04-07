@@ -30,7 +30,7 @@ function Toolbar({ reviewText}: Props){
                  headers: {
                      'Content-Type': 'application/json'
                  },
-                 body: JSON.stringify({event: 'run_code', language: selectedLang, room:'one'})
+                 body: JSON.stringify({event: 'run_code', language: selectedLang, room:'two'})
              })
              if (response.ok){
                  console.log("Run successful");
@@ -46,7 +46,7 @@ function Toolbar({ reviewText}: Props){
             const response = await fetch(`http://${hostname}:8080/api`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ event: 'code_review', room:'one'})
+                body: JSON.stringify({ event: 'code_review', room:'two'})
             })
             if (response.ok){
                 console.log("Code Review sent successfully");

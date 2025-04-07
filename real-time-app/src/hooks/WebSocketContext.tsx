@@ -8,7 +8,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    socketRef.current = new WebSocket(`ws://${hostname}:8080/api/ws`);
+    socketRef.current = new WebSocket(`ws://${hostname}:8080/api/ws?room=two`);
     socketRef.current.onopen = () => {
       console.log("Connected");
     };
