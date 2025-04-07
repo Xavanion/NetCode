@@ -15,6 +15,7 @@ function Toolbar({ reviewText}: Props){
     const toggleDropdown = () => setDropdownOpen(prev => !prev);
 
     const languages = ['C', 'Python', 'Java', 'C++', 'JavaScript', 'Go', 'Rust', 'PHP', 'TypeScript', 'C#'];
+    const hostname = window.location.hostname;
 
     const selectLanguage = (lang: string) => {
         setLanguage(lang);
@@ -24,7 +25,7 @@ function Toolbar({ reviewText}: Props){
 
     async function run_code(){
         try{
-            const response = await fetch('http://localhost:8080/api', {
+            const response = await fetch(`http://${hostname}:8080/api`, {
                  method: 'POST',
                  headers: {
                      'Content-Type': 'application/json'
@@ -42,7 +43,7 @@ function Toolbar({ reviewText}: Props){
 
     async function handleReviewClick(){
         try{
-            const response = await fetch('http://localhost:8080/api', {
+            const response = await fetch(`http://${hostname}:8080/api`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ event: 'code_review', room:'one'})
