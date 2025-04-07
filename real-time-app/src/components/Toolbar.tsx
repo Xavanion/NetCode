@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import '../styles/Toolbar.css';
+import { AppConfig } from '../config';
 
 type Props = {
     reviewText: (text: string) => void;
@@ -30,7 +31,7 @@ function Toolbar({ reviewText}: Props){
                  headers: {
                      'Content-Type': 'application/json'
                  },
-                 body: JSON.stringify({event: 'run_code', language: selectedLang, room:'two'})
+                 body: JSON.stringify({event: 'run_code', language: selectedLang, room:AppConfig.roomId})
              })
              if (response.ok){
                  console.log("Run successful");
@@ -46,7 +47,7 @@ function Toolbar({ reviewText}: Props){
             const response = await fetch(`http://${hostname}:8080/api`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ event: 'code_review', room:'two'})
+                body: JSON.stringify({ event: 'code_review', room:AppConfig.roomId})
             })
             if (response.ok){
                 console.log("Code Review sent successfully");

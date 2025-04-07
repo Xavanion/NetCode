@@ -1,5 +1,8 @@
 // hooks/WebSocketContext.tsx
 import React, { createContext, useContext, useEffect, useRef } from 'react';
+import { AppConfig } from '../config';
+
+console.log(AppConfig.roomId);
 
 const WebSocketContext = createContext<React.MutableRefObject<WebSocket | null> | null>(null);
 
@@ -8,7 +11,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    socketRef.current = new WebSocket(`ws://${hostname}:8080/api/ws?room=two`);
+    socketRef.current = new WebSocket(`ws://${hostname}:8080/api/ws?room=${AppConfig.roomId}`);
     socketRef.current.onopen = () => {
       console.log("Connected");
     };
