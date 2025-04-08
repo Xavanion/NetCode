@@ -2,17 +2,15 @@ package roomhandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
 	"time"
-
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 
 	aireview "github.com/Xavanion/Hack-KU-2025/backend/ai-review"
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
-	"github.com/gorilla/websocket"
 )
 
 type Room struct {
@@ -70,19 +68,17 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	case "run_code":
 		out, err := codehandler.Run_file(room.ID, string(requestData.Language), "main-", string(room.mainText))
 
-		fmt.Printf("Output: %s\n", out)
+		room.broadcastUpdate(nil, "output_update", out, false)
 		if (err != nil){
-			room.broadcastUpdate(nil, "output_update", out, false)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Server Error Processing code"})
 		} else{
-			room.broadcastUpdate(nil, "output_update", out, false)
 			c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
 		}
 	case "code_save":
 	case "code_review":
 		response, err := aireview.Gemini_Request(string(room.mainText))
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			err_out := "internal server error"
 			c.JSON(http.StatusInternalServerError, gin.H{"review": err_out})
 		}
@@ -93,9 +89,8 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, message string, isParsed bool) {
 	room.con_mu.Lock()
 	defer room.con_mu.Unlock()
-	//fmt.Println(room.activeConnections)
 	for conn := range room.activeConnections {
-		//fmt.Println("Sending message to:", conn.RemoteAddr())
+		// Don't send an update to whoever spawned the update
 		if conn == startconn {
 			continue
 		}
@@ -134,12 +129,9 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	// Turn the raw text back into a usable type
 	var json_mess map[string]any
 	json.Unmarshal([]byte(message), &json_mess)
-	//fmt.Println(json_mess)
-	//fmt.Println(message)
 	switch json_mess["event"] {
 	case "text_update":
 		if json_mess["type"] == "insert" {
-			//fmt.Println(json_mess["value"].(string))
 			position := int(json_mess["pos"].(float64))
 			if position > len(room.mainText) {
 				position -= 1
@@ -154,7 +146,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	default:
 		log.Print("Invalid json event")
 	}
-	fmt.Printf("Body:%s\n", string(room.mainText))
+	log.Printf("Body:%s\n", string(room.mainText))
 }
 
 func (room *Room) NewConnection(conn *websocket.Conn) {
@@ -219,7 +211,7 @@ func (room *Room) deleteByte(index int, num_chars int) {
 
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
-		fmt.Println("Index out of range")
+		log.Println("Index out of range: ", index, " ", num_chars)
 		return
 	}
 
