@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"sync"
-	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
@@ -156,7 +155,6 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Unlock()
 	defer conn.Close()
 
-	time.Sleep(time.Duration(500) * time.Millisecond)
 	msg := sendUpdateJson{
 		Event:  "connection_update",
 		Update: string(room.mainText),
