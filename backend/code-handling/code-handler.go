@@ -1,18 +1,16 @@
 package codehandler
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
 
-func Run_file(room_id string, language string, filename string, content string) string {
+func Run_file(room_id string, language string, filename string, content string) (string, error) {
 	// Get the current working directory the code is running in
 	dir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		return "Server Error getting working directory", err
 	}
 	// Set it to folder we want to store code in
 	path := filepath.Join(dir, "backend/code-handling/code", filename+room_id)
@@ -42,11 +40,9 @@ func Run_file(room_id string, language string, filename string, content string) 
 		path += ".cs"
 	}
 
-	//fmt.Println(path)
-	new_file, e := os.Create(path)
-	if e != nil {
-		log.Println("Error Creating file", e)
-		return "System error creating file"
+	new_file, err := os.Create(path)
+	if err != nil {
+		return "Server Error Creating file", err 
 	}
 	// Close the file whenever we are done
 	defer new_file.Close()
@@ -54,8 +50,7 @@ func Run_file(room_id string, language string, filename string, content string) 
 	// Write our content to the actual file
 	_, err = new_file.WriteString(content)
 	if err != nil {
-		log.Println("Error writing to file:", err)
-		return "System error writing to file"
+		return "Server Error writing to file", err
 	}
 	//Commits the file to the stable directory? idk
 	new_file.Sync()
@@ -71,7 +66,6 @@ func Run_file(room_id string, language string, filename string, content string) 
 		outputPath := path[:len(path)-2]
 		// Compile to the output path
 		cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
-		fmt.Println(outputPath)
 		// cmd = exec.Command("bash", "-c", "gcc "+path+" -o "+outputPath+"; "+outputPath)
 	case "Java":
 		// Remove the ".java" extension
@@ -85,7 +79,6 @@ func Run_file(room_id string, language string, filename string, content string) 
 		cmd = exec.Command("bash", "-c", "g++ "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
 	case "JavaScript":
 		// Run the JavaScript file using node
-		cmd = exec.Command("bash", "-c", "node "+path+"; rm "+path)
 	case "PHP":
 		cmd = exec.Command("bash", "-c", "php "+path+"; rm "+path)
 	case "Rust":
@@ -104,8 +97,7 @@ func Run_file(room_id string, language string, filename string, content string) 
 	// Run the command and store the standard output
 	output, err := cmd.Output()
 	if err != nil {
-		log.Println("Error executing command:", err)
-		return "System error executing command"
+		return "Server Error executing command", err
 	}
-	return string(output)
+	return string(output), nil
 }

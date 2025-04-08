@@ -68,18 +68,16 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	switch requestData.Event {
 	case "run_code":
-		//codehandler.Run_file("1", "Python", "main", "print(\"Hello World\")\n")
-		/*codehandler.Run_file("1", "C", "main", `
-		#include <stdio.h>
+		out, err := codehandler.Run_file(room.ID, string(requestData.Language), "main-", string(room.mainText))
 
-		int main(){
-		    printf("Hello World");
-		    return 0;
-		}`)*/
-		out := codehandler.Run_file("one", string(requestData.Language), "main-", string(room.mainText))
-		room.broadcastUpdate(nil, "output_update", out, false)
 		fmt.Printf("Output: %s\n", out)
-		c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
+		if (err != nil){
+			room.broadcastUpdate(nil, "output_update", out, false)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Server Error Processing code"})
+		} else{
+			room.broadcastUpdate(nil, "output_update", out, false)
+			c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
+		}
 	case "code_save":
 	case "code_review":
 		response, err := aireview.Gemini_Request(string(room.mainText))
