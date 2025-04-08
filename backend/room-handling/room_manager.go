@@ -20,7 +20,7 @@ type Room struct {
 	activeConnections map[*websocket.Conn]bool
 	con_mu            sync.Mutex
 	mainText          []byte
-	text_mu			  sync.Mutex
+	text_mu           sync.Mutex
 }
 type RoomManager struct {
 	Rooms map[string]*Room
@@ -29,7 +29,7 @@ type RoomManager struct {
 type ApiRequest struct {
 	Event    string `json:"event"`
 	Language string `json:"language"`
-	Room string `json:"room"`
+	Room     string `json:"room"`
 }
 
 type sendUpdateJson struct {
@@ -43,7 +43,7 @@ func NewRoomManager() *RoomManager {
 	}
 }
 
-func (manager *RoomManager) CreateRoom(roomid string) *Room{
+func (manager *RoomManager) CreateRoom(roomid string) *Room {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	manager.Rooms[roomid] = &Room{
@@ -57,9 +57,9 @@ func (manager *RoomManager) CreateRoom(roomid string) *Room{
 func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
-	if(manager.Rooms[id] == nil){
+	if manager.Rooms[id] == nil {
 		return nil, false
-	}else {
+	} else {
 		room := manager.Rooms[id]
 		return room, true
 	}
@@ -83,10 +83,10 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	case "code_save":
 	case "code_review":
 		response, err := aireview.Gemini_Request(string(room.mainText))
-		if(err != nil){
+		if err != nil {
 			fmt.Println(err)
 			err_out := "internal server error"
-			c.JSON(http.StatusInternalServerError, gin.H{"review":err_out})
+			c.JSON(http.StatusInternalServerError, gin.H{"review": err_out})
 		}
 		c.JSON(http.StatusOK, gin.H{"review": response})
 	}
@@ -159,17 +159,16 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	fmt.Printf("Body:%s\n", string(room.mainText))
 }
 
-
 func (room *Room) NewConnection(conn *websocket.Conn) {
 	// update our activeConnections so we can message persistently
 	room.con_mu.Lock()
 	room.activeConnections[conn] = true
 	room.con_mu.Unlock()
 	defer conn.Close()
-	
-	time.Sleep(time.Duration(500)*time.Millisecond)
+
+	time.Sleep(time.Duration(500) * time.Millisecond)
 	msg := sendUpdateJson{
-		Event:  "input_update",
+		Event:  "connection_update",
 		Update: string(room.mainText),
 	}
 	jsonData, err := json.Marshal(msg)
@@ -201,14 +200,14 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Unlock()
 }
 
-func (room *Room) insertBytes( index int, value []byte) {
+func (room *Room) insertBytes(index int, value []byte) {
 	slice := room.mainText
 	room.text_mu.Lock()
 	defer room.text_mu.Unlock()
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
 		log.Println("Index out of range")
-		return 
+		return
 	}
 
 	// Insert the byte at the given index
@@ -223,7 +222,7 @@ func (room *Room) deleteByte(index int, num_chars int) {
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
 		fmt.Println("Index out of range")
-		return 
+		return
 	}
 
 	// Remove the byte at the given index

@@ -28,14 +28,14 @@ func main() {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"***"},
-		AllowMethods:     []string{"POST", "PATCH"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowOrigins:  []string{"***"},
+		AllowMethods:  []string{"POST", "PATCH"},
+		AllowHeaders:  []string{"Origin", "Content-Type", "Accept"},
+		ExposeHeaders: []string{"Content-Length"},
 		AllowOriginFunc: func(origin string) bool {
-		  return origin == "https://github.com"
+			return origin == "https://github.com"
 		},
-	  }))
+	}))
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
 
@@ -43,7 +43,7 @@ func main() {
 	api := router.Group("/api")
 	{
 		api.POST("/", func(c *gin.Context) {
-			var requestData roomhandler.ApiRequest 
+			var requestData roomhandler.ApiRequest
 			if err := c.ShouldBindJSON(&requestData); err != nil {
 				// If the binding fails, return an error
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -51,7 +51,7 @@ func main() {
 			}
 			// Check if the room exists, if it does we tell that room to do the api request
 			room, exists := roomManager.GetRoom(requestData.Room)
-			if(exists){
+			if exists {
 				room.FileApiRequest(requestData, c)
 			}
 		})
@@ -62,7 +62,7 @@ func main() {
 			if roomID == "" {
 				//c.JSON(http.StatusBadRequest, gin.H{"error": "room ID required"})
 				log.Print("Bad Request")
-				return 
+				return
 			}
 			// Upgrade GET request to a WebSocket
 			conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -71,7 +71,7 @@ func main() {
 			}
 			log.Print("room: ", string(roomID))
 			room, exists := roomManager.GetRoom(roomID)
-			if(exists){
+			if exists {
 				room.NewConnection(conn)
 			} else {
 				room := roomManager.CreateRoom(roomID)

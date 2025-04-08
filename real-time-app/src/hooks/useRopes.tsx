@@ -43,7 +43,12 @@ export function useRopes(): [string, (newText:string) => void, string] {
     });
     return flattened.join('');
   }
-  
+
+
+  function setInitialText(newText: string) {
+    rope.current = RopeSequence.from(Array.from(newText));
+    setText(newText);
+  }
   
 
   // Update text ref for textbox display
@@ -104,7 +109,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
             setOutput(data.update);
             break;
           case 'connection_update': // User connects and needs to update data in input
-            setText(data.update);
+            setInitialText(data.update);
             break;
           default:
             console.warn("Unknown WebSocket event:", data);
