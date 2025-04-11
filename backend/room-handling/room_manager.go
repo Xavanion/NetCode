@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
@@ -202,12 +203,12 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	room.con_mu.Unlock()
 	defer conn.Close()
 
+	time.Sleep(time.Duration(500) * time.Millisecond)
 	msg := sendUpdateJson{
 		Event:  "connection_update",
 		Update: room.getText(),
 	}
 	jsonData, err := json.Marshal(msg)
-
 	// Catch the new connection up with the current state
 	if err != nil {
 		log.Println("Failed to marshall update message json: ", err)
