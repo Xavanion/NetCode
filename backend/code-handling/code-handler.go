@@ -39,10 +39,6 @@ func Run_file(room_id string, language string, filename string, content string) 
 		path += ".go"
 	case "Rust":
 		path += ".rs"
-	case "PHP":
-		path += ".php"
-	case "C#":
-		path += ".cs"
 	}
 
 	new_file, err := os.Create(path)
@@ -82,19 +78,12 @@ func Run_file(room_id string, language string, filename string, content string) 
 		outputPath := path[:len(path)-4] // C++ files have the .cpp extension
 		// Compile the C++ file and run the executable
 		cmd = exec.Command("bash", "-c", "g++ "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
-	case "JavaScript":
-		// Run the JavaScript file using node
-	case "PHP":
-		cmd = exec.Command("bash", "-c", "php "+path+"; rm "+path)
 	case "Rust":
 		outputPath := path[:len(path)-3] // Remove the ".rs" extension
 		cmd = exec.Command("bash", "-c", "rustc "+path+" -o "+outputPath+"; "+outputPath+"; rm "+outputPath+" "+path)
 	case "TypeScript":
 		outputPath := path[:len(path)-3] // Remove the ".ts" extension
 		cmd = exec.Command("bash", "-c", "tsc "+path+" && node "+outputPath+".js && rm "+outputPath+".js "+path)
-	case "C#":
-		outputPath := path[:len(path)-4] // Remove the ".csproj" extension
-		cmd = exec.Command("bash", "-c", "dotnet build "+path+"; dotnet run --project "+outputPath+"; rm "+path)
 	case "Go":
 		outputPath := path[:len(path)-3] // Remove the ".go" extension
 		cmd = exec.Command("bash", "-c", "go run "+path+"; rm "+outputPath+" "+path)

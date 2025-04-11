@@ -49,6 +49,7 @@ func NewRoomManager() *RoomManager {
 		Rooms: make(map[string]*Room),
 	}
 }
+
 /* Used when a roommanager wants to initialize a new room
 * PARAMS: The room id the user wants to create
 * RETURNS: A pointer to the newly created room
@@ -106,6 +107,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"review": response})
 	}
 }
+
 /* This function is priamrly used to broadcast an update recieved from an active connection to every other user in the room
 *  PARAMS: startconn (optional) the user sending the update, event: what type of update is being sent,
 *  message: the content being sent (such as remove the character at x position), and isParsed which is if we need to unmarshall the message first
@@ -150,6 +152,7 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, messa
 		}
 	}
 }
+
 /* This function recieves a message from a websocket connection and dictates what we update/if we respond
 *  PARAMS: message: the raw message we recieved from the webocket, conn: the socket connection that was the sender
 *  RETURNS: none
@@ -221,6 +224,7 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	delete(room.activeConnections, conn)
 	room.con_mu.Unlock()
 }
+
 /* Used to add text to the server's copy of a room's content
 *  PARAMS: the index to add the text at, the text to add
 *  RETURNS: none
@@ -239,6 +243,7 @@ func (room *Room) insertBytes(index int, value []byte) {
 	// Insert the byte at the given index
 	room.mainText = append(slice[:index], append(value, slice[index:]...)...)
 }
+
 /* Deletes text from the server's copy of a room's content
 *  PARAMS: the index to start deletion from, the number of characters to remove 
 *  RETURNS: none
