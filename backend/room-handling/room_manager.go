@@ -12,6 +12,7 @@ import (
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
 )
 
+// This is the struct used for an individual room that people can connect to
 type Room struct {
 	ID                string
 	activeConnections map[*websocket.Conn]bool
@@ -19,27 +20,39 @@ type Room struct {
 	mainText          []byte
 	text_mu           sync.Mutex
 }
+
+// This struct is for managing all active rooms
 type RoomManager struct {
 	Rooms map[string]*Room
 	mu    sync.RWMutex
 }
+
+// 
 type ApiRequest struct {
 	Event    string `json:"event"`
 	Language string `json:"language"`
 	Room     string `json:"room"`
 }
 
+// This struct is used mainly for rebroadcasting updates recieved from the front end
 type sendUpdateJson struct {
 	Event  string      `json:"event"`
 	Update interface{} `json:"update"`
 }
 
+/* A func that's used to spin up a new room manager
+* PARAMS: none
+* RETURNS: the pointer to the created room manager 
+*/
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
 		Rooms: make(map[string]*Room),
 	}
 }
-
+/* Used when a roommanager wants to initialize a new room
+* PARAMS: The room id the user wants to create
+* RETURNS: A pointer to the newly created room
+*/
 func (manager *RoomManager) CreateRoom(roomid string) *Room {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
@@ -51,6 +64,10 @@ func (manager *RoomManager) CreateRoom(roomid string) *Room {
 	return manager.Rooms[roomid]
 }
 
+/* This function is called on a manager and checks if the rool exists
+* PARAMS: id: the relevant id that is being checked for
+* RETURNS: The pointer to the relevant room if it exists, a boolean that is True iff the room exists
+*/
 func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
@@ -62,6 +79,10 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 	}
 }
 
+/* This function is the entry point for any HTTP API requests we recieve such as running the code 
+* PARAMS: requestData: the relevant information from the request in struct form, the gin context so we can return status codes
+* RETURNS: none
+*/
 func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	switch requestData.Event {
 	case "run_code":
@@ -75,7 +96,8 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 		}
 	case "code_save":
 	case "code_review":
-		response, err := aireview.Gemini_Request(string(room.mainText))
+		// Create a gemini review using the server's copy of the stored text
+		response, err := aireview.Gemini_Review(string(room.mainText))
 		if err != nil {
 			log.Println(err)
 			err_out := "internal server error"
@@ -84,8 +106,13 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"review": response})
 	}
 }
-
+/* This function is priamrly used to broadcast an update recieved from an active connection to every other user in the room
+*  PARAMS: startconn (optional) the user sending the update, event: what type of update is being sent,
+*  message: the content being sent (such as remove the character at x position), and isParsed which is if we need to unmarshall the message first
+*  RETURNS: none
+*/
 func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, message string, isParsed bool) {
+	// Lock any new connections out to avoid weird inconsistencies
 	room.con_mu.Lock()
 	defer room.con_mu.Unlock()
 	for conn := range room.activeConnections {
@@ -123,7 +150,10 @@ func (room *Room) broadcastUpdate(startconn *websocket.Conn, event string, messa
 		}
 	}
 }
-
+/* This function recieves a message from a websocket connection and dictates what we update/if we respond
+*  PARAMS: message: the raw message we recieved from the webocket, conn: the socket connection that was the sender
+*  RETURNS: none
+*/
 func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	// Turn the raw text back into a usable type
 	var json_mess map[string]any
@@ -148,6 +178,10 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	log.Printf("Body:%s\n", string(room.mainText))
 }
 
+/* This is where we handle a new websocket connection after it has been upgraded and passes new messages to handleMessages()
+* PARAMS: this function is called on the room we are adding to, conn: the new websocket connection
+* RETURNS: none
+*/
 func (room *Room) NewConnection(conn *websocket.Conn) {
 	// update our activeConnections so we can message persistently
 	room.con_mu.Lock()
@@ -161,15 +195,15 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	}
 	jsonData, err := json.Marshal(msg)
 
+	// Catch the new connection up with the current state
 	if err != nil {
 		log.Println("Failed to marshall update message json: ", err)
-	}
-
-	// Catch the new connection up with what's going on
-
-	if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+	} else if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 		conn.Close()                         // Close connection if it fails to send a message
+		room.con_mu.Lock()
 		delete(room.activeConnections, conn) // Remove broken connection
+		room.con_mu.Unlock()
+		return
 	}
 
 	// Listen for incoming messages from this specific connection
@@ -187,6 +221,10 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	delete(room.activeConnections, conn)
 	room.con_mu.Unlock()
 }
+/* Used to add text to the server's copy of a room's content
+*  PARAMS: the index to add the text at, the text to add
+*  RETURNS: none
+*/
 
 func (room *Room) insertBytes(index int, value []byte) {
 	slice := room.mainText
@@ -201,7 +239,10 @@ func (room *Room) insertBytes(index int, value []byte) {
 	// Insert the byte at the given index
 	room.mainText = append(slice[:index], append(value, slice[index:]...)...)
 }
-
+/* Deletes text from the server's copy of a room's content
+*  PARAMS: the index to start deletion from, the number of characters to remove 
+*  RETURNS: none
+*/
 func (room *Room) deleteByte(index int, num_chars int) {
 	slice := room.mainText
 	room.text_mu.Lock()

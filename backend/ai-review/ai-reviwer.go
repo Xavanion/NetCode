@@ -12,18 +12,23 @@ import (
 	"google.golang.org/api/option"
 )
 
+// All three of these structs are used to take in the gemini response
 type Content struct{
-    Parts []string `json:Parts`
-    Role string `json:Role`
+    Parts []string `json:"Parts"`
+    Role string `json:"Role"`
 } 
 type Candidates struct {
-    Content *Content `json:Content`
+    Content *Content `json:"Content"`
 }
 type ContentResponse struct{
-    Candidates *[]Candidates `json:Candidates`
+    Candidates *[]Candidates `json:"Candidates"`
 }
 
-func Gemini_Request(code string) (string, error){
+/* This function queries gemini to do a code review 
+*  PARAMS: the code to be reviewed in string format 
+*  RETURNS: The gemini text response, any errors that may have happened
+*/
+func Gemini_Review(code string) (string, error){
 	// Access your API key as an environment variable 
 	log.Println("HIT GEMINI")
 	err := godotenv.Load(".env")
@@ -60,6 +65,7 @@ func Gemini_Request(code string) (string, error){
 			If possible, include a revised version of the code incorporating your suggestions.
 			Make sure all sections use Markdown formatting properly (e.g., headers, bullet points, code blocks).
 			Aim to be clear, friendly, and professional, as if giving feedback to a peer:\n`+code))
+
 	if err != nil {
 		return "", err
 	}
