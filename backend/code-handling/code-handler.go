@@ -31,8 +31,6 @@ func Run_file(room_id string, language string, filename string, content string) 
 		path += ".java"
 	case "C++":
 		path += ".cpp"
-	case "JavaScript":
-		path += ".js"
 	case "TypeScript":
 		path += ".ts"
 	case "Go":
