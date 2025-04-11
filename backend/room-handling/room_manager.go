@@ -18,7 +18,7 @@ type Room struct {
 	activeConnections map[*websocket.Conn]bool
 	con_mu            sync.Mutex
 	mainText          []byte
-	text_mu           sync.Mutex
+	text_mu           sync.RWMutex
 }
 
 // This struct is for managing all active rooms
@@ -80,6 +80,16 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 	}
 }
 
+/* returns the mainText parameter for a room in a safe way 
+*  PARAMS: none
+*  RETURNS: The room's mainText paramenter
+*/
+func (room *Room) getText() string{
+	room.text_mu.RLock()
+	defer room.text_mu.RUnlock()
+	return string(room.mainText)
+}
+
 /* This function is the entry point for any HTTP API requests we recieve such as running the code 
 * PARAMS: requestData: the relevant information from the request in struct form, the gin context so we can return status codes
 * RETURNS: none
@@ -87,7 +97,7 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	switch requestData.Event {
 	case "run_code":
-		out, err := codehandler.Run_file(room.ID, string(requestData.Language), "main-", string(room.mainText))
+		out, err := codehandler.Run_file(room.ID, string(requestData.Language), "main-", room.getText())
 
 		room.broadcastUpdate(nil, "output_update", out, false)
 		if (err != nil){
@@ -98,7 +108,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 	case "code_save":
 	case "code_review":
 		// Create a gemini review using the server's copy of the stored text
-		response, err := aireview.Gemini_Review(string(room.mainText))
+		response, err := aireview.Gemini_Review(room.getText())
 		if err != nil {
 			log.Println(err)
 			err_out := "internal server error"
@@ -165,7 +175,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	case "text_update":
 		if json_mess["type"] == "insert" {
 			position := int(json_mess["pos"].(float64))
-			if position > len(room.mainText) {
+			if position > len(room.getText()) {
 				position -= 1
 			}
 			room.insertBytes(position, []byte(json_mess["value"].(string)))
@@ -178,7 +188,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 	default:
 		log.Print("Invalid json event")
 	}
-	log.Printf("Body:%s\n", string(room.mainText))
+	log.Printf("Body:%s\n", room.getText())
 }
 
 /* This is where we handle a new websocket connection after it has been upgraded and passes new messages to handleMessages()
@@ -194,7 +204,7 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 
 	msg := sendUpdateJson{
 		Event:  "connection_update",
-		Update: string(room.mainText),
+		Update: room.getText(),
 	}
 	jsonData, err := json.Marshal(msg)
 
@@ -231,9 +241,10 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 */
 
 func (room *Room) insertBytes(index int, value []byte) {
+	room.text_mu.RLock()
 	slice := room.mainText
-	room.text_mu.Lock()
-	defer room.text_mu.Unlock()
+	room.text_mu.RUnlock()
+
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
 		log.Println("Index out of range")
@@ -241,7 +252,9 @@ func (room *Room) insertBytes(index int, value []byte) {
 	}
 
 	// Insert the byte at the given index
+	room.text_mu.Lock()
 	room.mainText = append(slice[:index], append(value, slice[index:]...)...)
+	room.text_mu.Unlock()
 }
 
 /* Deletes text from the server's copy of a room's content
@@ -249,9 +262,9 @@ func (room *Room) insertBytes(index int, value []byte) {
 *  RETURNS: none
 */
 func (room *Room) deleteByte(index int, num_chars int) {
+	room.text_mu.RLock()
 	slice := room.mainText
-	room.text_mu.Lock()
-	defer room.text_mu.Unlock()
+	room.text_mu.RUnlock()
 
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
@@ -260,5 +273,7 @@ func (room *Room) deleteByte(index int, num_chars int) {
 	}
 
 	// Remove the byte at the given index
+	room.text_mu.Lock()
 	room.mainText = append(slice[:index], slice[index+num_chars:]...)
+	room.text_mu.Unlock()
 }
