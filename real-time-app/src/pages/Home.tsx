@@ -21,6 +21,7 @@ import { useState } from 'react';
         - inputText: current input code
         - updateText: function to update the input code
         - outputText: output from the backend (code execution results)
+        - incomingOp: Whatever op was used most recently to change the rope
     - useState for:
         - responseText: holds the AI code review text
         - activeOutput: tracks whether terminal or review output is active
@@ -31,7 +32,7 @@ import { useState } from 'react';
     - Right Pane: OutputToolbar for switching views, Outputbox for display
 */
 function Home() {
-  const [text, updateText, outputText ] = useRopes()
+  const [text, updateText, outputText, incomingOp ] = useRopes()
   const [responseText, setReviewText] = useState('');
   const [activeOutput, setActiveOutput] = useState<'terminal' | 'review'>('terminal');
 
@@ -42,7 +43,7 @@ function Home() {
       <div className="boxContainer">
         <div className="inputBox">
           <Toolbar reviewText={setReviewText}/>
-          <Textbox curText={text} setText={updateText}/>
+          <Textbox curText={text} setText={updateText} incomingOp={incomingOp}/>
         </div>
         <div className='outputBoxContainer'>
           <OutputToolbar

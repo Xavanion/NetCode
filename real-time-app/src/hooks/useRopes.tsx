@@ -3,12 +3,12 @@ import { useWS } from './WebSocketContext';
 import RopeSequence from 'rope-sequence';
 
 /* 
-  Define RopeOperation type.
+  Define and export RopeOperation type.
   This represents the possible operations that can be sent/received via WebSocket:
     - Insert a value at a position
     - Delete a range from 'from' to 'to'
 */
-type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: string } | { event: 'text_update'; type: 'delete'; from: number; to: number };
+export type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: string } | { event: 'text_update'; type: 'delete'; from: number; to: number };
 
 /* 
   Custom hook useRopes
@@ -23,6 +23,7 @@ type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: 
     - setInitialText: Sets textbox upon connection/reconnection for use with syncing to environment
     - updateText: Update rope based on user input changes, Calculates difference and creates a minimal operation (insert/delete), Then broadcasts the operation via WebSocket
     - useEffect: Used to do websocket communication: syncing of content and listening to changes from other users in the same room
+    - setIncomingOp: used to set variable to whatever incoming operation is happening
 
   Dependencies:
     - useWS: Websocket Context
@@ -34,10 +35,11 @@ type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: 
   Returns:
     [inputText, updateInputText, outputText]
 */
-export function useRopes(): [string, (newText:string) => void, string] {
+export function useRopes(): [string, (newText:string) => void, string, (RopeOperation|null)] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>); // Create rope
   const [text, setText] = useState(''); // Create text for use in setting textbox
   const [outputText, setOutput] = useState(''); // Set output box
+  const [incomingOp, setIncomingOp] = useState<RopeOperation|null>(null); // Set for use with passing & dealing with operation length adjustments
   const socket = useWS(); // Connect to context web socket
   const debug: boolean = true; // Boolean used for debugging
 
@@ -48,6 +50,7 @@ export function useRopes(): [string, (newText:string) => void, string] {
   */
   const applyOp = (op: RopeOperation) => {
     let curRope = rope.current;
+    setIncomingOp(op); // Set for use with other components
 
     // Check op type and then append new value where it needs to go
     if (op.type === 'insert'){
@@ -186,5 +189,5 @@ export function useRopes(): [string, (newText:string) => void, string] {
     - updateText: Function to update input text (and sync)
     - outputText: Output text to be shown in terminal/review panel
   */
-  return [text, updateText, outputText];
+  return [text, updateText, outputText, incomingOp];
 }
