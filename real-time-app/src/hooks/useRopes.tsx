@@ -16,7 +16,7 @@ export type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; 
     - rope-backed state management for input text
     - real-time collaborative editing via WebSocket
     - synchronized output text from code execution
-  
+
   Functions:
     - applyOp: Applies the rope operation and updates the textbox/internal rope
     - ropeToString: Flattens the rope and converts it to a string, used to set textbox
@@ -90,7 +90,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
     rope.current = RopeSequence.from(Array.from(newText));
     setText(newText);
   }
-  
+
 
   /* 
     Update rope based on user input changes
@@ -121,7 +121,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
       socket.current?.send(JSON.stringify(op)); // Pass op to others
     }
   }
-  
+
   /* 
     useEffect to handle WebSocket communication
     - Listens for and responds to messages from server
@@ -130,13 +130,13 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
   useEffect(() => {
     // Create interval variable
     let interval: ReturnType<typeof setInterval>;
-  
+
     // Function for when attached
     function attachOnMessage(ws: WebSocket) {
       if (debug) console.log('WebSocket connected, attaching onmessage handler');
-	
+
       //socket.current?.send("one");
-  
+
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
 
@@ -147,7 +147,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
           console.log("Data", data.event);
           console.log("Op", data.update);
         }
-        
+
         // Switch statement to tell event from front-end
         switch (data.event) {
           case 'input_update': // User text update
@@ -165,7 +165,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
         }
       };
     }
-  
+
     // Connect to websocket, if not connected wait interval and try again
     const tryAttach = () => {
       const ws = socket.current;
@@ -174,16 +174,16 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
         clearInterval(interval);
       }
     };
-  
+
     // Keep retrying connection every 100ms
     tryAttach(); // Try immediately
     interval = setInterval(tryAttach, 100); // Retry every 100ms
-  
+
     return () => clearInterval(interval); // Cleanup
   }, [socket.current]);
-  
 
-  /* 
+
+  /*
     Return hook values:
     - text: Current input text for editor
     - updateText: Function to update input text (and sync)

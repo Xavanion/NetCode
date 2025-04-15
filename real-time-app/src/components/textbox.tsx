@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
+import type { RopeOperation } from '../hooks/useRopes';
 import '../styles/textbox.css';
-import type { RopeOperation } from '../hooks/useRopes'; // Adjust path as needed
 
 
 type Props = {
@@ -36,7 +36,7 @@ function Textbox({ curText, setText, incomingOp }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastTextRef = useRef<string>(''); // Keep last known value
   const cursorRef = useRef<number>(0); // Keep cursor position
-  
+
   // Used to handle user-inputted changes
   const handleInput = () => {
     // Grab the textarea DOM element
@@ -70,7 +70,7 @@ function Textbox({ curText, setText, incomingOp }: Props) {
           currentCursor += incomingOp.value.length;
         } else if (incomingOp.type === 'delete'){
           if (incomingOp.to <= currentCursor){
-            currentCursor -= (incomingOp.to - incomingOp.from); 
+            currentCursor -= (incomingOp.to - incomingOp.from);
           } else if (incomingOp.from < currentCursor && currentCursor < incomingOp.to){
             currentCursor = incomingOp.from;
           }
@@ -82,7 +82,7 @@ function Textbox({ curText, setText, incomingOp }: Props) {
       textarea.setSelectionRange(currentCursor, currentCursor);
     }
   }, [curText, incomingOp]);
-  
+
 
   return (
     <div className="textbox-container">
