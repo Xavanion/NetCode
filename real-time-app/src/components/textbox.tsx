@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useRef } from 'react';
 import '../styles/textbox.css';
 
 type Props = {
@@ -20,18 +20,58 @@ type Props = {
       - setText: (value: string) => void
         A callback function used to update the textbox when typing
 
+    Functions:
+      - handleInput: Handles when the user enters & changes the textbox through DOM manipulation
+      - useEffect: Handles when someone else changes the DOM element
+
     Dependencies:
       - No outside dependencies outside of passed Props
 */
 function Textbox({ curText, setText }: Props) {
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lastTextRef = useRef<string>(''); // Keep last known value
+  const cursorRef = useRef<number>(0); // Keep cursor position
+  
+  // Used to handle user-inputted changes
+  const handleInput = () => {
+    // Grab the textarea DOM element
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Grad current value from DOM and save where cursor is
+    const newText = textarea.value;
+    cursorRef.current = textarea.selectionStart ?? 0;
+
+
+    // Only update text changed
+    if (newText !== lastTextRef.current) {
+      setText(newText);
+      lastTextRef.current = newText;
+    }
   };
+
+  // Used to handle incoming changes
+  useEffect(() => {
+    // Get current DOM element
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Only update it if the text is different
+    if (curText !== lastTextRef.current) {
+      // Grab cursor, update text and restore cursor
+      const currentCursor = textarea.selectionStart;
+      textarea.value = curText;
+      lastTextRef.current = curText;
+      textarea.setSelectionRange(currentCursor, currentCursor); // Restore cursor
+    }
+  }, [curText]);
+  
+
   return (
     <div className="textbox-container">
       <textarea
-        value={curText}
-        onChange={handleChange}
+        ref={textareaRef}
+        onChange={handleInput}
         placeholder="Enter your text here"
         className="textarea"
       />
