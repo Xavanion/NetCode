@@ -6,6 +6,21 @@ type Props = {
   activeOutput: 'terminal' | 'review';
 };
 
+
+/*
+  Output box Component:
+    Resuable Output Box used to view the code output & code review
+  
+  Props:
+    - curText: string
+      Text to output
+    - activeOutput: string
+      Callback function that selects which output to output to the textbox, sets curText = output
+  
+  Dependencies:
+    - ReactMarkdown
+      Used to display code review with markdown support
+*/
 function Outputbox({ curText, activeOutput }: Props) {
   return (
     <div className="outputbox-container">

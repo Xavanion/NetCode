@@ -13,9 +13,9 @@ import CreateAccount from './pages/CreateAccount';
 function App() {
   return (
       <BrowserRouter>
-        <div className='app-content'>
+        <div className='app-content'>  {/* Used to wrap entire webpage */}
           <Navbar />
-          <div className='content-container'>
+          <div className='content-container'> {/* Used to wrap non-navbar content to allow easily swapping main content of page*/}
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/account" element={<Account />}/>

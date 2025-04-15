@@ -2,6 +2,18 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/site_logo.png';
 import '../styles/Navbar.css';
 
+
+/*
+  Navbar Component:
+    Reusable Navbar Component that lives at the App level above the main content which switches
+
+  Props:
+    - Nothing
+  
+  Dependencies:
+    - Logo from assets
+    - Link used to navigate with buttons
+*/
 function Navbar(){
     return(
         <nav className="navbar">

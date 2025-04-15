@@ -9,8 +9,24 @@ type Props = {
 };
 
 
+/* 
+  Tool Bar Component:
+    Reusable Toolbar UI component that lets someone:
+      - Select a programming language from a dropdown menu
+      - Send code execution to the backend
+      - Trigger AI code reviews via Gemini
 
-function Toolbar({ reviewText}: Props){
+  Props:
+    - reviewText: (text: string) => void
+      A callback function used to update the review text area with the response from the backend AI code review
+      Called to when clicking the "review code" button
+  
+  Dependencies:
+    - useState
+    - FontAwesome (For dropdown icon)
+    - Appconfig for room ID/Config
+*/
+function Toolbar({reviewText}: Props){
     const  [selectedLang, setLanguage] = useState('C');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => setDropdownOpen(prev => !prev);

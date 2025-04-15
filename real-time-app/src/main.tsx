@@ -6,7 +6,7 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <WebSocketProvider>
+    <WebSocketProvider> {/* WebSocketContext to allow for all components in the app to call to the same websocket */}
       <App />
     </WebSocketProvider>
   </StrictMode>,
