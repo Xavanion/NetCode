@@ -276,7 +276,54 @@ func getOpVersion(op map[string]any) (uint64, bool) {
  */
 func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any, clientVersion uint64, currentVersion uint64, message string) {
 	fmt.Printf("Version Mismatch: client %d != server %d\n", clientVersion, currentVersion)
-	// Transform json_mess in place
+
+	// Check for race Conditions
+	if clientVersion > currentVersion {
+		fmt.Printf("WARNING: Client version (%d) is ahead of server version (%d).\n", clientVersion, currentVersion)
+
+		// Just apply the operation directly without transformation
+		if json_mess["type"] == "insert" {
+			position := int(json_mess["pos"].(float64))
+			textLen := len(room.getText())
+			if position < 0 {
+				position = 0
+			} else if position > textLen {
+				position = textLen
+			}
+			room.insertBytes(position, []byte(json_mess["value"].(string)))
+		} else if json_mess["type"] == "delete" {
+			from := int(json_mess["from"].(float64))
+			to := int(json_mess["to"].(float64))
+			room.deleteByte(from, to-from)
+		}
+
+		// Update room version & history
+		room.text_mu.Lock()
+		room.version++
+		json_mess["version"] = room.version
+		room.history = append(room.history, json_mess)
+		room.text_mu.Unlock()
+
+		// Convert the json_mess back to a JSON string
+		updatedMessage, err := json.Marshal(json_mess)
+		if err != nil {
+			log.Println("Failed to marshal operation:", err)
+			return
+		}
+
+		// Broadcast the updated message
+		room.broadcastUpdate(nil, "version_mismatch_update", string(updatedMessage), true)
+		return
+	}
+
+	// Normal case: Client version is behind server version
+	historyLen := uint64(len(room.history))
+	if clientVersion > historyLen {
+		fmt.Printf("Client version (%d) exceeds history length (%d). Adjusting.\n", clientVersion, historyLen)
+		clientVersion = historyLen
+	}
+
+	// Transform against history operations
 	for _, op := range room.history[clientVersion:] {
 		version, ok := getOpVersion(op)
 		if !ok {
@@ -288,11 +335,14 @@ func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any
 		}
 	}
 
-	// Apply transformed op (insert bytes/deleteBytes)
+	// Apply transformed op
 	if json_mess["type"] == "insert" {
 		position := int(json_mess["pos"].(float64))
-		if position > len(room.getText()) {
-			position -= 1
+		textLen := len(room.getText())
+		if position < 0 {
+			position = 0
+		} else if position > textLen {
+			position = textLen
 		}
 		room.insertBytes(position, []byte(json_mess["value"].(string)))
 	} else if json_mess["type"] == "delete" {
@@ -301,14 +351,22 @@ func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any
 		room.deleteByte(from, to-from)
 	}
 
-	// Update room version & broadcast update
+	// Update room version & history
 	room.text_mu.Lock()
 	room.version++
 	json_mess["version"] = room.version
 	room.history = append(room.history, json_mess)
 	room.text_mu.Unlock()
 
-	room.broadcastUpdate(nil, "version_mismatch_update", message, true)
+	// Convert the transformed json_mess back to a JSON string
+	updatedMessage, err := json.Marshal(json_mess)
+	if err != nil {
+		log.Println("Failed to marshal transformed operation:", err)
+		return
+	}
+
+	// Broadcast the transformed and updated message
+	room.broadcastUpdate(nil, "version_mismatch_update", string(updatedMessage), true)
 }
 
 /* This function recieves a message from a websocket connection and dictates what we update/if we respond
@@ -417,7 +475,7 @@ func (room *Room) insertBytes(index int, value []byte) {
 
 	// Ensure index is valid
 	if index < 0 || index > len(slice) {
-		log.Println("Index out of range")
+		log.Printf("\nIndex out of range:\nIndex:%d\nLen:%d", index, len(slice))
 		return
 	}
 

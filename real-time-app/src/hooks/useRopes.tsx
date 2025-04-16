@@ -61,10 +61,12 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
     Apply a rope operation (insert/delete) to the current rope
     Updates both internal rope and textbox string state
   */
-  const applyOp = (op: RopeOperation) => {
+  const applyOp = (op: RopeOperation, version_mismatch_present: boolean) => {
     let curRope = rope.current;
     setIncomingOp(oldArray => [...oldArray, op]); // Set for use with other components
-
+    if (version_mismatch_present){
+      console.log(`Version mismatch detected. Local: ${localVersion.current}, Received: ${op.version}`);
+    }
     // Check op type and then append new value where it needs to go
     if (op.type === 'insert'){
       const before = curRope.slice(0,op.pos);
@@ -119,21 +121,36 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
       i++;
     }
 
+    let op: RopeOperation;
 
     if (oldText.length > newText.length){
       // Deletion
       let difference = oldText.length - newText.length; // Find the amount deleted
-      const op: RopeOperation = {event: 'text_update', type: 'delete', from: i, to: i+difference, version: localVersion.current}; // Remove that bit
-      applyOp(op);
-      socket.current?.send(JSON.stringify(op)); // Pass op to others
-      localVersion.current++
+      op = {
+        event: 'text_update',
+        type: 'delete',
+        from: i,
+        to: i+difference,
+        version: localVersion.current
+      };
     } else {
       // Insertion
       const inserted = newText.slice(i, newText.length - (oldText.length - i)); // Find length of what to insert
-      const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:inserted, version: localVersion.current}; // Setup event & send it to update
-      applyOp(op);
-      socket.current?.send(JSON.stringify(op)); // Pass op to others
-      localVersion.current++;
+      op = {
+        event: 'text_update',
+        type: 'insert',
+        pos: i,
+        value:inserted,
+        version: localVersion.current
+      };
+    }
+ 
+    applyOp(op, false);
+    socket.current?.send(JSON.stringify(op)); // Pass op to others
+    localVersion.current++
+
+    if (debug) {
+      console.log(`Local version incremented to ${localVersion.current}`);
     }
   }
 
@@ -157,22 +174,21 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
 
         // Debugging statements
         if (debug) {
-          console.log("Raw socket data:", e);
           console.log("Parsed Socket data", data);
           console.log("Data", data.event);
-          console.log("Op", data.update);
         }
+
+        const op: RopeOperation = data.update;
 
         // Switch statement to tell event from front-end
         switch (data.event) {
           case 'input_update': // User text update
-            const op: RopeOperation = data.update;
-            applyOp(op);
-            if(typeof data.update.version === 'number' && data.update.version >= localVersion.current){
-              console.log("VERSION MISMATCH VERSION:", localVersion.current)
-              localVersion.current = data.update.version + 1;
-              console.log("VERSION AFTER:", localVersion.current);
-            }
+            applyOp(op, false);
+            break;
+          case 'version_mismatch_update':
+            applyOp(op, true);
+            console.log(`VERSION MISMATCH HANDLED:\nLOCAL: ${localVersion.current}\nSERVER: ${data.update.version}`);
+            localVersion.current = data.update.version;
             break;
           case 'output_update': // User click run
             setOutput(data.update);
