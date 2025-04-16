@@ -308,7 +308,7 @@ func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any
 	room.history = append(room.history, json_mess)
 	room.text_mu.Unlock()
 
-	room.broadcastUpdate(conn, "input_update", message, true)
+	room.broadcastUpdate(nil, "version_mismatch_update", message, true)
 }
 
 /* This function recieves a message from a websocket connection and dictates what we update/if we respond

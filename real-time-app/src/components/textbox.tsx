@@ -6,7 +6,7 @@ import '../styles/textbox.css';
 type Props = {
   curText: string;
   setText: (value: string) => void;
-  incomingOp: (RopeOperation | null);
+  incomingOp: RopeOperation[];
 };
 
 
@@ -65,14 +65,16 @@ function Textbox({ curText, setText, incomingOp }: Props) {
     if (curText !== lastTextRef.current) {
       // Grab cursor, update text and restore cursor
       let currentCursor = textarea.selectionStart ?? 0;
-      if (incomingOp){
-        if(incomingOp.type === 'insert' && incomingOp.pos <= currentCursor){
-          currentCursor += incomingOp.value.length;
-        } else if (incomingOp.type === 'delete'){
-          if (incomingOp.to <= currentCursor){
-            currentCursor -= (incomingOp.to - incomingOp.from);
-          } else if (incomingOp.from < currentCursor && currentCursor < incomingOp.to){
-            currentCursor = incomingOp.from;
+      while(incomingOp.length > 0){
+        var headOp = incomingOp.shift()
+        if (!headOp) return;
+        if(headOp.type === 'insert' && headOp.pos <= currentCursor){
+          currentCursor += headOp.value.length;
+        } else if (headOp.type === 'delete'){
+          if (headOp.to <= currentCursor){
+            currentCursor -= (headOp.to - headOp.from);
+          } else if (headOp.from < currentCursor && currentCursor < headOp.to){
+            currentCursor = headOp.from;
           }
         }
       }

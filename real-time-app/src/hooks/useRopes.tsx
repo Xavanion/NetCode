@@ -47,11 +47,11 @@ export type RopeOperation = {
   Returns:
     [inputText, updateInputText, outputText]
 */
-export function useRopes(): [string, (newText:string) => void, string, (RopeOperation|null)] {
+export function useRopes(): [string, (newText:string) => void, string, (RopeOperation[])] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>); // Create rope
   const [text, setText] = useState(''); // Create text for use in setting textbox
   const [outputText, setOutput] = useState(''); // Set output box
-  const [incomingOp, setIncomingOp] = useState<RopeOperation|null>(null); // Set for use with passing & dealing with operation length adjustments
+  const [incomingOp, setIncomingOp] = useState<RopeOperation[]>([]); // Set for use with passing & dealing with operation length adjustments
   const localVersion = useRef(0); // Used for operational transformations
   const socket = useWS(); // Connect to context web socket
   const debug: boolean = true; // Boolean used for debugging
@@ -63,7 +63,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
   */
   const applyOp = (op: RopeOperation) => {
     let curRope = rope.current;
-    setIncomingOp(op); // Set for use with other components
+    setIncomingOp(oldArray => [...oldArray, op]); // Set for use with other components
 
     // Check op type and then append new value where it needs to go
     if (op.type === 'insert'){
@@ -169,7 +169,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
             const op: RopeOperation = data.update;
             applyOp(op);
             if(typeof data.update.version === 'number' && data.update.version >= localVersion.current){
-              console.log("VERSION BEFORE:", localVersion.current);
+              console.log("VERSION MISMATCH VERSION:", localVersion.current)
               localVersion.current = data.update.version + 1;
               console.log("VERSION AFTER:", localVersion.current);
             }
