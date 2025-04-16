@@ -8,7 +8,19 @@ import RopeSequence from 'rope-sequence';
     - Insert a value at a position
     - Delete a range from 'from' to 'to'
 */
-export type RopeOperation ={ event: 'text_update'; type: 'insert'; pos: number; value: string } | { event: 'text_update'; type: 'delete'; from: number; to: number };
+export type RopeOperation = {
+  event: 'text_update';
+  type: 'insert';
+  pos: number;
+  value: string;
+  version: number;
+} | {
+  event: 'text_update';
+  type: 'delete';
+  from: number;
+  to: number;
+  version: number;
+};
 
 /* 
   Custom hook useRopes
@@ -40,6 +52,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
   const [text, setText] = useState(''); // Create text for use in setting textbox
   const [outputText, setOutput] = useState(''); // Set output box
   const [incomingOp, setIncomingOp] = useState<RopeOperation|null>(null); // Set for use with passing & dealing with operation length adjustments
+  const localVersion = useRef(0); // Used for operational transformations
   const socket = useWS(); // Connect to context web socket
   const debug: boolean = true; // Boolean used for debugging
 
@@ -110,15 +123,16 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
     if (oldText.length > newText.length){
       // Deletion
       let difference = oldText.length - newText.length; // Find the amount deleted
-      const op: RopeOperation = {event: 'text_update', type: 'delete', from: i, to: i+difference}; // Remove that bit
+      const op: RopeOperation = {event: 'text_update', type: 'delete', from: i, to: i+difference, version: localVersion.current}; // Remove that bit
       applyOp(op);
       socket.current?.send(JSON.stringify(op)); // Pass op to others
     } else {
       // Insertion
       const inserted = newText.slice(i, newText.length - (oldText.length - i)); // Find length of what to insert
-      const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:inserted}; // Setup event & send it to update
+      const op: RopeOperation = {event: 'text_update', type: 'insert', pos: i, value:inserted, version: localVersion.current}; // Setup event & send it to update
       applyOp(op);
       socket.current?.send(JSON.stringify(op)); // Pass op to others
+      localVersion.current++;
     }
   }
 
@@ -152,13 +166,26 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
         switch (data.event) {
           case 'input_update': // User text update
             const op: RopeOperation = data.update;
+            console.log("OP", op);
             applyOp(op);
+            if(typeof data.update.version === 'number'){
+              localVersion.current = data.update.version;
+            }
             break;
           case 'output_update': // User click run
             setOutput(data.update);
             break;
           case 'connection_update': // User connects and needs to update data in input
-            setInitialText(data.update);
+            if (typeof data.update.text === 'string') {
+              setInitialText(data.update.text);
+            } else{
+              console.log('Connection update text not recieved as a string:', data.update.text) // Debug line
+            }
+            if(typeof data.update.version === 'number'){
+              localVersion.current = data.update.version;
+            } else{
+              console.log('Connection update version not recieved as a number:', data.update.version) // Debug line
+            }
             break;
           default:
             console.warn("Unknown WebSocket event:", data);
