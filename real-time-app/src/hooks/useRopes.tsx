@@ -126,6 +126,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
       const op: RopeOperation = {event: 'text_update', type: 'delete', from: i, to: i+difference, version: localVersion.current}; // Remove that bit
       applyOp(op);
       socket.current?.send(JSON.stringify(op)); // Pass op to others
+      localVersion.current++
     } else {
       // Insertion
       const inserted = newText.slice(i, newText.length - (oldText.length - i)); // Find length of what to insert
@@ -166,10 +167,11 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
         switch (data.event) {
           case 'input_update': // User text update
             const op: RopeOperation = data.update;
-            console.log("OP", op);
             applyOp(op);
-            if(typeof data.update.version === 'number'){
-              localVersion.current = data.update.version;
+            if(typeof data.update.version === 'number' && data.update.version >= localVersion.current){
+              console.log("VERSION BEFORE:", localVersion.current);
+              localVersion.current = data.update.version + 1;
+              console.log("VERSION AFTER:", localVersion.current);
             }
             break;
           case 'output_update': // User click run
@@ -181,7 +183,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
             } else{
               console.log('Connection update text not recieved as a string:', data.update.text) // Debug line
             }
-            if(typeof data.update.version === 'number'){
+            if(typeof data.update.version === 'number' && localVersion.current === 0){
               localVersion.current = data.update.version;
             } else{
               console.log('Connection update version not recieved as a number:', data.update.version) // Debug line

@@ -251,6 +251,24 @@ func transformOp(incomingOp map[string]any, historyOp map[string]any) {
 	}
 }
 
+/* This is a helper function for versionMismatch that allows the user to see if the type of the version is something common and convert it to a uint64
+ * PARAMS: A mapped operation (op from history)
+ * RETURNS: Two variables the value as a uint64 and a bool for whether this worked or defaulted
+ */
+func getOpVersion(op map[string]any) (uint64, bool) {
+	switch value := op["version"].(type) {
+	case float64:
+		return uint64(value), true
+	case int:
+		return uint64(value), true
+	case uint64:
+		return value, true
+	default:
+		fmt.Printf("Unexpected version type: %T (%v)\n", value, value)
+		return 0, false
+	}
+}
+
 /* This function goes through all past operations that are of equal or greater version than the current one and adjusts them to fit what it needs to be then sends out the broadcast
  * PARAMS: conn: the websocket connection, used to send out the message at the end ; json_mess: the incoming operation mapped as strings ;
  *	clientVersion: a uint64 value of the clients local version ; currentVersion: a uint64 value of the rooms most current version ; message: the operation as a string
@@ -260,12 +278,13 @@ func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any
 	fmt.Printf("Version Mismatch: client %d != server %d\n", clientVersion, currentVersion)
 	// Transform json_mess in place
 	for _, op := range room.history[clientVersion:] {
-		if version, ok := op["version"].(float64); ok {
-			if uint64(version) >= clientVersion {
-				transformOp(json_mess, op) // Do operational transformation on json_mess in place
-			}
-		} else {
+		version, ok := getOpVersion(op)
+		if !ok {
 			fmt.Println("Failed to get version from history op", op)
+			continue
+		}
+		if version >= clientVersion {
+			transformOp(json_mess, op)
 		}
 	}
 
