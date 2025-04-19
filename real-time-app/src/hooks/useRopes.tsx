@@ -14,12 +14,14 @@ export type RopeOperation = {
   pos: number;
   value: string;
   version: number;
+  author: number;
 } | {
   event: 'text_update';
   type: 'delete';
   from: number;
   to: number;
   version: number;
+  author: number;
 };
 
 /* 
@@ -53,6 +55,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
   const [outputText, setOutput] = useState(''); // Set output box
   const [incomingOp, setIncomingOp] = useState<RopeOperation[]>([]); // Set for use with passing & dealing with operation length adjustments
   const localVersion = useRef(0); // Used for operational transformations
+  const localUID = useRef(0);
   const socket = useWS(); // Connect to context web socket
   const debug: boolean = true; // Boolean used for debugging
 
@@ -131,7 +134,8 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
         type: 'delete',
         from: i,
         to: i+difference,
-        version: localVersion.current
+        version: localVersion.current,
+        author: localUID.current,
       };
     } else {
       // Insertion
@@ -141,7 +145,8 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
         type: 'insert',
         pos: i,
         value:inserted,
-        version: localVersion.current
+        version: localVersion.current,
+        author: localUID.current,
       };
     }
  
@@ -197,12 +202,17 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
             if (typeof data.update.text === 'string') {
               setInitialText(data.update.text);
             } else{
-              console.log('Connection update text not recieved as a string:', data.update.text) // Debug line
+              console.log('Connection update text not recieved as a string:', data.update.text); // Debug line
             }
             if(typeof data.update.version === 'number' && localVersion.current === 0){
               localVersion.current = data.update.version;
             } else{
-              console.log('Connection update version not recieved as a number:', data.update.version) // Debug line
+              console.log('Connection update version not recieved as a number:', data.update.version); // Debug line
+            }
+            if(typeof data.update.uid === 'number'){
+              localUID.current = data.update.uid;
+            } else{
+              console.log('Connection update uid not recieved as a number:', data.update.uid);
             }
             break;
           default:

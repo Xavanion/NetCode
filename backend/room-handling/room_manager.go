@@ -19,6 +19,8 @@ import (
 type Room struct {
 	ID                string
 	activeConnections map[*websocket.Conn]bool
+	connIDs           map[*websocket.Conn]int
+	nextUID           int
 	con_mu            sync.Mutex
 	mainText          []byte
 	text_mu           sync.RWMutex
@@ -34,8 +36,9 @@ type Operation struct {
 	Pos   int
 	Value string
 	// For Delete
-	From int
-	To   int
+	From   int
+	To     int
+	Author string
 }
 
 // This struct is for managing all active rooms
@@ -76,7 +79,9 @@ func (manager *RoomManager) CreateRoom(roomid string) *Room {
 	manager.Rooms[roomid] = &Room{
 		ID:                roomid,
 		activeConnections: make(map[*websocket.Conn]bool),
+		connIDs:           make(map[*websocket.Conn]int),
 		mainText:          make([]byte, 0),
+		nextUID:           0,
 	}
 	return manager.Rooms[roomid]
 }
@@ -122,6 +127,7 @@ func (room *Room) FileApiRequest(requestData ApiRequest, c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully"})
 		}
 	case "code_save":
+		fmt.Println("code_save switch case hit")
 	case "code_review":
 		// Create a gemini review using the server's copy of the stored text
 		response, err := aireview.Gemini_Review(room.getText())
@@ -196,7 +202,7 @@ func transformOp(incomingOp map[string]any, historyOp map[string]any) {
 		historyVal := historyOp["value"].(string)
 
 		// If other insert was before current adjust the current ops index
-		if (historyPos < incomingPos) || (historyPos == incomingPos) {
+		if (historyPos < incomingPos) || (historyPos == incomingPos && historyOp["author"].(string) < incomingOp["author"].(string)) {
 			incomingOp["pos"] = incomingPos + float64(len(historyVal))
 		}
 	case incomingType == "insert" && historyType == "delete": // Insert | Delete
@@ -416,6 +422,13 @@ func (room *Room) getVersion() uint64 {
 	return room.version
 }
 
+func (room *Room) newUID() int {
+	// generate id
+	uid := room.nextUID
+	room.nextUID++
+	return uid
+}
+
 /* This is where we handle a new websocket connection after it has been upgraded and passes new messages to handleMessages()
 * PARAMS: this function is called on the room we are adding to, conn: the new websocket connection
 * RETURNS: none
@@ -424,6 +437,8 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 	// update our activeConnections so we can message persistently
 	room.con_mu.Lock()
 	room.activeConnections[conn] = true
+	uid := room.newUID()
+	room.connIDs[conn] = uid
 	room.con_mu.Unlock()
 	defer conn.Close()
 
@@ -433,6 +448,7 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 		Update: map[string]interface{}{
 			"text":    room.getText(),
 			"version": room.getVersion(),
+			"uid":     uid,
 		},
 	}
 	jsonData, err := json.Marshal(msg)
