@@ -43,7 +43,7 @@ function Home() {
       <div className="boxContainer">
         <div className="inputBox">
           <Toolbar reviewText={setReviewText}/>
-          <Textbox curText={text} setText={updateText} incomingOp={incomingOp}/>
+          <Textbox curText={text} setText={updateText} incomingOp={incomingOp} id="mainInput"/>
         </div>
         <div className='outputBoxContainer'>
           <OutputToolbar
@@ -53,6 +53,7 @@ function Home() {
           <Outputbox
             curText={activeOutput === 'terminal' ? outputText : responseText}
             activeOutput={activeOutput}
+			id="mainOutput"
           />
         </div>
       </div>

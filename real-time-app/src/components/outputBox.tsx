@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 type Props = {
   curText: string;
   activeOutput: 'terminal' | 'review';
+  id: string;
 };
 
 
@@ -21,12 +22,13 @@ type Props = {
     - ReactMarkdown
       Used to display code review with markdown support
 */
-function Outputbox({ curText, activeOutput }: Props) {
+function Outputbox({ curText, activeOutput, id }: Props) {
   return (
     <div className="outputbox-container">
       {activeOutput === 'terminal' ? (
         <textarea
           readOnly
+		  id={id}
           value={curText}
           placeholder="Output will be shown here"
           className="output_textarea"

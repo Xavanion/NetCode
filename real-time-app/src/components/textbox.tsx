@@ -7,6 +7,7 @@ type Props = {
   curText: string;
   setText: (value: string) => void;
   incomingOp: RopeOperation[];
+  id: string;
 };
 
 
@@ -32,7 +33,7 @@ type Props = {
     Dependencies:
       - No outside dependencies outside of passed Props
 */
-function Textbox({ curText, setText, incomingOp }: Props) {
+function Textbox({ curText, setText, incomingOp, id }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastTextRef = useRef<string>(''); // Keep last known value
   const cursorRef = useRef<number>(0); // Keep cursor position
@@ -89,6 +90,7 @@ function Textbox({ curText, setText, incomingOp }: Props) {
   return (
     <div className="textbox-container">
       <textarea
+		id={id}
         ref={textareaRef}
         onInput={handleInput}
         placeholder="Enter your text here"
