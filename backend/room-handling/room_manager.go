@@ -72,8 +72,14 @@ func NewRoomManager() *RoomManager {
 * RETURNS: A pointer to the newly created room
  */
 func (manager *RoomManager) CreateRoom(roomid string) *Room {
+	room, exists := manager.GetRoom(roomid)
+	if(exists){
+		return room
+	}
+
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
+
 	manager.Rooms[roomid] = &Room{
 		ID:                roomid,
 		activeConnections: make(map[*websocket.Conn]bool),
