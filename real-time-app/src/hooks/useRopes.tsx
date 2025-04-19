@@ -199,7 +199,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
             } else{
               console.log('Connection update text not recieved as a string:', data.update.text) // Debug line
             }
-            if(typeof data.update.version === 'number' && localVersion.current === 0){
+            if(typeof data.update.version === 'number' && Number(localVersion.current) === 0){
               localVersion.current = data.update.version;
             } else{
               console.log('Connection update version not recieved as a number:', data.update.version) // Debug line
