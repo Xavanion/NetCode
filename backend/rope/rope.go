@@ -3,7 +3,9 @@ package rope
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"unicode/utf8"
 )
 
@@ -210,16 +212,22 @@ func (rope *Rope) Insert(idx int, str string) *Rope {
 
 //Delete generates a new rope by deleting from
 //the original one starting at  idx.
-func (rope *Rope) Delete(idx int, length int) *Rope {
-	if idx == 0 {
-		
-	}else if rope == nil{
-		return nil
+func (rope *Rope) Delete(idx int, length int) (*Rope, error) {
+	if idx < 1 || idx > rope.length+1 {
+		return nil, errors.New("delete: index out of bounds ") 
+	} else if length < 0 {
+		return nil, errors.New("delete: length cannot be negative")
+	} else if idx+length-1 > rope.length {
+		// just delete up to the end
+		length = rope.length - 1 
+	}else if length == 0 {
+		// no-op
+		return rope, nil 
 	}
 
 	r1, r2 := rope.Split(idx - 1)
 	_, r4 := r2.Split(length)
-	return r1.Concat(r4)
+	return r1.Concat(r4), nil
 }
 
 //Report return a substring of the rope starting from index included.

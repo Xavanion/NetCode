@@ -104,9 +104,6 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 func (room *Room) getText() string {
 	room.text_mu.RLock()
 	defer room.text_mu.RUnlock()
-	if(room.serverText == nil){
-		return ""
-	}
 	return room.serverText.String()
 }
 
@@ -494,12 +491,15 @@ func (room *Room) deleteByte(index int, num_chars int) {
 	defer room.text_mu.Unlock()
 
 	// Ensure index is valid
-	if index < 0 || index > room.serverText.Len() {
+	if index < 0 || index > room.serverText.Len(){
 		log.Println("Index out of range: ", index, " ", num_chars)
 		return
-	} else if index == 0 && num_chars == room.serverText.Len()-1{
-		room.serverText = rope.New("")
-	} else {
-		room.serverText =  room.serverText.Delete(index+1, num_chars)
+	} 
+	newText, err :=  room.serverText.Delete(index+1, num_chars)
+	if(err != nil){
+		fmt.Println("error", err)
+		return
 	}
+
+	room.serverText = newText
 }
