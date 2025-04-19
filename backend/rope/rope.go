@@ -212,7 +212,7 @@ func (rope *Rope) Insert(idx int, str string) *Rope {
 //the original one starting at  idx.
 func (rope *Rope) Delete(idx int, length int) *Rope {
 	if idx == 0 {
-		return rope 
+		
 	}else if rope == nil{
 		return nil
 	}

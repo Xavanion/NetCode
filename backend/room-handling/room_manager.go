@@ -480,8 +480,6 @@ func (room *Room) insertBytes(index int, data string) {
 	if index < 0 || index > room.serverText.Len() {
 		log.Printf("\nIndex out of range:\nIndex:%d\nLen:%d", index, room.serverText.Len())
 		return
-	} else if(room.serverText == nil){
-		room.serverText = rope.New(data)
 	} else {
 		room.serverText = room.serverText.Insert(index, data)
 	}
@@ -499,6 +497,9 @@ func (room *Room) deleteByte(index int, num_chars int) {
 	if index < 0 || index > room.serverText.Len() {
 		log.Println("Index out of range: ", index, " ", num_chars)
 		return
+	} else if index == 0 && num_chars == room.serverText.Len()-1{
+		room.serverText = rope.New("")
+	} else {
+		room.serverText =  room.serverText.Delete(index+1, num_chars)
 	}
-	room.serverText =  room.serverText.Delete(index+1, num_chars)
 }
