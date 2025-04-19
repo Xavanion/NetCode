@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
+	rope "github.com/Xavanion/Hack-KU-2025/backend/rope"
 	aireview "github.com/Xavanion/Hack-KU-2025/backend/ai-review"
 	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
 )
@@ -20,7 +21,7 @@ type Room struct {
 	ID                string
 	activeConnections map[*websocket.Conn]bool
 	con_mu            sync.Mutex
-	mainText          []byte
+	serverText		  *rope.Rope
 	text_mu           sync.RWMutex
 	version           uint64
 	history           []map[string]any
@@ -76,7 +77,7 @@ func (manager *RoomManager) CreateRoom(roomid string) *Room {
 	manager.Rooms[roomid] = &Room{
 		ID:                roomid,
 		activeConnections: make(map[*websocket.Conn]bool),
-		mainText:          make([]byte, 0),
+		serverText: nil,
 	}
 	return manager.Rooms[roomid]
 }
@@ -103,7 +104,10 @@ func (manager *RoomManager) GetRoom(id string) (*Room, bool) {
 func (room *Room) getText() string {
 	room.text_mu.RLock()
 	defer room.text_mu.RUnlock()
-	return string(room.mainText)
+	if(room.serverText == nil){
+		return ""
+	}
+	return room.serverText.String()
 }
 
 /* This function is the entry point for any HTTP API requests we recieve such as running the code
@@ -290,7 +294,7 @@ func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any
 			} else if position > textLen {
 				position = textLen
 			}
-			room.insertBytes(position, []byte(json_mess["value"].(string)))
+			room.insertBytes(position, json_mess["value"].(string))
 		} else if json_mess["type"] == "delete" {
 			from := int(json_mess["from"].(float64))
 			to := int(json_mess["to"].(float64))
@@ -344,7 +348,7 @@ func (room *Room) versionMismatch(conn *websocket.Conn, json_mess map[string]any
 		} else if position > textLen {
 			position = textLen
 		}
-		room.insertBytes(position, []byte(json_mess["value"].(string)))
+		room.insertBytes(position, json_mess["value"].(string))
 	} else if json_mess["type"] == "delete" {
 		from := int(json_mess["from"].(float64))
 		to := int(json_mess["to"].(float64))
@@ -391,7 +395,7 @@ func (room *Room) handleMessages(message string, conn *websocket.Conn) {
 			if position > len(room.getText()) {
 				position -= 1
 			}
-			room.insertBytes(position, []byte(json_mess["value"].(string)))
+			room.insertBytes(position, json_mess["value"].(string))
 		} else if json_mess["type"] == "delete" {
 			from := int(json_mess["from"].(float64))
 			to := int(json_mess["to"].(float64))
@@ -468,21 +472,19 @@ func (room *Room) NewConnection(conn *websocket.Conn) {
 *  RETURNS: none
  */
 
-func (room *Room) insertBytes(index int, value []byte) {
-	room.text_mu.RLock()
-	slice := room.mainText
-	room.text_mu.RUnlock()
-
-	// Ensure index is valid
-	if index < 0 || index > len(slice) {
-		log.Printf("\nIndex out of range:\nIndex:%d\nLen:%d", index, len(slice))
-		return
-	}
-
-	// Insert the byte at the given index
+func (room *Room) insertBytes(index int, data string) {
 	room.text_mu.Lock()
-	room.mainText = append(slice[:index], append(value, slice[index:]...)...)
-	room.text_mu.Unlock()
+	defer room.text_mu.Unlock()
+
+	// Ensure index is valid, idk if this is necessary
+	if index < 0 || index > room.serverText.Len() {
+		log.Printf("\nIndex out of range:\nIndex:%d\nLen:%d", index, room.serverText.Len())
+		return
+	} else if(room.serverText == nil){
+		room.serverText = rope.New(data)
+	} else {
+		room.serverText = room.serverText.Insert(index, data)
+	}
 }
 
 /* Deletes text from the server's copy of a room's content
@@ -490,18 +492,13 @@ func (room *Room) insertBytes(index int, value []byte) {
 *  RETURNS: none
  */
 func (room *Room) deleteByte(index int, num_chars int) {
-	room.text_mu.RLock()
-	slice := room.mainText
-	room.text_mu.RUnlock()
+	room.text_mu.Lock()
+	defer room.text_mu.Unlock()
 
 	// Ensure index is valid
-	if index < 0 || index > len(slice) {
+	if index < 0 || index > room.serverText.Len() {
 		log.Println("Index out of range: ", index, " ", num_chars)
 		return
 	}
-
-	// Remove the byte at the given index
-	room.text_mu.Lock()
-	room.mainText = append(slice[:index], slice[index+num_chars:]...)
-	room.text_mu.Unlock()
+	room.serverText =  room.serverText.Delete(index+1, num_chars)
 }
