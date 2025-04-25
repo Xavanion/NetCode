@@ -4,7 +4,8 @@ import './styles/Toolbar.css'
 import './styles/outputBox.css'
 import './styles/textbox.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import Code from './pages/Code';
+import Landing from './pages/Landing';
 import Account from './pages/Account';
 import Navbar from './components/Navbar';
 import CreateAccount from './pages/CreateAccount';
@@ -17,7 +18,8 @@ function App() {
           <Navbar />
           <div className='content-container'> {/* Used to wrap non-navbar content to allow easily swapping main content of page*/}
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Code />} />
+                <Route path='/home' element={<Landing />} />
                 <Route path="/account" element={<Account />}/>
                 <Route path="/create-account" element={<CreateAccount />} />
             </Routes>

@@ -39,6 +39,10 @@ func main() {
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("real-time-app/dist", true)))
 
+	router.NoRoute(func(c *gin.Context) {
+		c.File("real-time-app/dist/index.html")
+	})
+
 	// Setup route group for the API
 	api := router.Group("/api")
 	{

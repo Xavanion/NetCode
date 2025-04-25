@@ -31,7 +31,7 @@ import { useState } from 'react';
     - Left Pane: Toolbar + editable Textbox for code input
     - Right Pane: OutputToolbar for switching views, Outputbox for display
 */
-function Home() {
+function Code() {
   const [text, updateText, outputText, incomingOp ] = useRopes()
   const [responseText, setReviewText] = useState('');
   const [activeOutput, setActiveOutput] = useState<'terminal' | 'review'>('terminal');
@@ -60,4 +60,4 @@ function Home() {
     </div>
   );
 }
-export default Home;
+export default Code;
