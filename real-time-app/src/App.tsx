@@ -1,5 +1,4 @@
 import './App.css'
-import './styles/Navbar.css'
 import './styles/Toolbar.css'
 import './styles/outputBox.css'
 import './styles/textbox.css'

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import logo from '../assets/site_logo.png';
-import '../styles/Navbar.css';
 
 
 /*
@@ -14,21 +13,28 @@ import '../styles/Navbar.css';
     - Logo from assets
     - Link used to navigate with buttons
 */
-function Navbar(){
-    return(
-        <nav className="navbar">
-            <div className="left_nav">
-                <Link to="/" className="name">
-                    <img className="image" src={logo} alt="Logo"/>
-                        NetCode
+function Navbar() {
+    return (
+        <nav className="fixed top-0 w-full flex items-center justify-between h-[60px] px-[20px] bg-[#063038] text-[#edf0f1] z-[1000]">
+            {/* Left section */}
+            <div className="flex items-center space-x-2">
+                <Link to="/" className="flex items-center text-[1.5rem] font-bold text-[#edf0f1] no-underline">
+                    <img src={logo} alt="Logo" className="h-[2.3rem] w-auto mr-[0.5rem]" />
+                    <span>NetCode</span>
                 </Link>
             </div>
-            <div className="mid_nav">
-            </div>
-            <div className="right_nav">
 
+            {/* Middle section */}
+            <div className="flex-1 flex justify-center items-center">
+                {/* Example: Insert navigation links here if needed */}
+            </div>
+
+            {/* Right section */}
+            <div className="flex items-center space-x-4">
+                {/* Example: Add login/signup buttons here */}
             </div>
         </nav>
-    )
+    );
 }
+
 export default Navbar;
