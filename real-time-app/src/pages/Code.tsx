@@ -52,10 +52,7 @@ function Code() {
 
         {/* Output Box */}
         <div className="w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded">
-          <OutputToolbar
-            activeOutput={activeOutput}
-            setActiveOutput={setActiveOutput}
-          />
+          <OutputToolbar setActiveOutput={setActiveOutput} />
           <Outputbox
             curText={activeOutput === "terminal" ? outputText : responseText}
             activeOutput={activeOutput}

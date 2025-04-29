@@ -1,7 +1,4 @@
-import "../styles/Toolbar.css";
-
 type Props = {
-  activeOutput: "terminal" | "review";
   setActiveOutput: (val: "terminal" | "review") => void;
 };
 
@@ -17,21 +14,21 @@ type Props = {
       - setActiveOutput: (val: string) => void
         Callback function to set the current tab displayed
 
-tailwind button: "bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition"
+tailwind button: "bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
 */
-function OutputToolbar({ activeOutput, setActiveOutput }: Props) {
+function OutputToolbar({ setActiveOutput }: Props) {
   return (
-    <div className="flex items-center bg-[#252526] text-[#ccc] p-2 border-b border-[#333] text-[13px] font-fira toolbar">
+    <div className="flex items-center bg-[#252526] text-[#ccc] p-2 border-b border-[#333] text-[13px] font-fira">
       <ul className="list-none flex m-0 p-0">
         <li className="flex items-center gap-2">
           <button
-            className={activeOutput === "terminal" ? "active" : ""}
+            className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
             onClick={() => setActiveOutput("terminal")}
           >
             Terminal
           </button>
           <button
-            className={activeOutput === "review" ? "active" : ""}
+            className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
             onClick={() => setActiveOutput("review")}
           >
             Review

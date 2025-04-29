@@ -104,7 +104,7 @@ function Toolbar({ reviewText }: Props) {
             onClick={run_code}
             className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
           >
-            Run{" "}
+            Run
           </button>
           <button
             onClick={handleReviewClick}

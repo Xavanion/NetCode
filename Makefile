@@ -1,11 +1,15 @@
 .PHONY: all frontend backend
 
 all: frontend backend
+quick: frontend-quick backend
 go: backend
 test: frontend jest
 
 frontend:
 	cd real-time-app && npm i && npm run build
+
+frontend-quick:
+	cd real-time-app && npm run build
 
 backend:
 	go run .
