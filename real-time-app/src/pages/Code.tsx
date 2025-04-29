@@ -1,4 +1,3 @@
-import './styles/Home.css';
 import Textbox from '../components/textbox';
 import Outputbox from '../components/outputBox';
 import Toolbar from '../components/Toolbar';
@@ -38,14 +37,17 @@ function Code() {
 
 
   return (
-    <div className="pageContainer">
-      <h1 className='codeHeader'>Codin time</h1>
-      <div className="boxContainer">
-        <div className="inputBox">
+    <div className="flex flex-col flex-1 p-[20px]">
+      <h1 className='ml-2 mb-2 text-4xl font-bold'>Codin time</h1>
+      <div className="flex flex-row w-full flex-1">
+        {/* Input Box */}
+        <div className="w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded">
           <Toolbar reviewText={setReviewText}/>
           <Textbox curText={text} setText={updateText} incomingOp={incomingOp} id="mainInput"/>
         </div>
-        <div className='outputBoxContainer'>
+
+        {/* Output Box */}
+        <div className='w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded'>
           <OutputToolbar
             activeOutput={activeOutput}
             setActiveOutput={setActiveOutput}
@@ -53,7 +55,7 @@ function Code() {
           <Outputbox
             curText={activeOutput === 'terminal' ? outputText : responseText}
             activeOutput={activeOutput}
-			id="mainOutput"
+			      id="mainOutput"
           />
         </div>
       </div>
