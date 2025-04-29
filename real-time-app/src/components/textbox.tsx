@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import type { RopeOperation } from '../hooks/useRopes';
-import '../styles/textbox.css';
 
 
 type Props = {
@@ -88,13 +87,13 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
 
 
   return (
-    <div className="textbox-container">
+    <div className="flex flex-1">
       <textarea
-		id={id}
+		    id={id}
         ref={textareaRef}
         onInput={handleInput}
         placeholder="Enter your text here"
-        className="textarea"
+        className="flex-1 p-[12px] text-sm leading-[1.5] text-[#d4d4d4] font-fira bg-[#1e1e1e] outline-none textarea"
       />
     </div>
   );

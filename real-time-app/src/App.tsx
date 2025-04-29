@@ -1,6 +1,5 @@
 import './styles/Toolbar.css'
 import './styles/outputBox.css'
-import './styles/textbox.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Code from './pages/Code';
 import Landing from './pages/Landing';

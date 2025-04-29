@@ -1,5 +1,3 @@
-import './styles/Account.css'
-
 function CreateAccount(){
     return(
         <>

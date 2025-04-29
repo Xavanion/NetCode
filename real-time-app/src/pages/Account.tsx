@@ -1,5 +1,3 @@
-import './styles/Account.css'
-
 function Account(){
     return(
         <>
