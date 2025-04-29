@@ -15,7 +15,7 @@ import logo from '../assets/site_logo.png';
 */
 function Navbar() {
     return (
-        <nav className="fixed top-0 w-full flex items-center justify-between h-[60px] px-[20px] bg-[#063038] text-[#edf0f1] z-[1000]">
+        <nav className="fixed top-0 w-full flex items-center justify-between h-[70px] sm:h-[60px] px-[20px] bg-[#063038] text-[#edf0f1] z-[1000]">
             {/* Left section */}
             <div className="flex items-center space-x-2">
                 <Link to="/" className="flex items-center text-[1.5rem] font-bold text-[#edf0f1] no-underline">

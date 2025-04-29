@@ -1,4 +1,3 @@
-import './App.css'
 import './styles/Toolbar.css'
 import './styles/outputBox.css'
 import './styles/textbox.css'
@@ -13,9 +12,9 @@ import CreateAccount from './pages/CreateAccount';
 function App() {
   return (
       <BrowserRouter>
-        <div className='app-content'>  {/* Used to wrap entire webpage */}
+        <div className='min-h-screen overflow-y-hidden bg-[#14181d] text-white'>  {/* Used to wrap entire webpage */}
           <Navbar />
-          <div className='content-container'> {/* Used to wrap non-navbar content to allow easily swapping main content of page*/}
+          <div className='flex flex-col pt-[70px] sm:pt-[60px] overflow-hidden h-full'> {/* Used to wrap non-navbar content to allow easily swapping main content of page*/}
             <Routes>
                 <Route path="/" element={<Code />} />
                 <Route path='/home' element={<Landing />} />
