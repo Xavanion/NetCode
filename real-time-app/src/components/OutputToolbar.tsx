@@ -16,6 +16,8 @@ type Props = {
         Used to tell which component to display
       - setActiveOutput: (val: string) => void
         Callback function to set the current tab displayed
+
+tailwind button: "bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition"
 */
 function OutputToolbar({ activeOutput, setActiveOutput }: Props) {
   return (

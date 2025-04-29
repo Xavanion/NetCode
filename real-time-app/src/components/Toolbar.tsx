@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import "../styles/Toolbar.css";
 import { AppConfig } from "../config";
 
 type Props = {
@@ -77,15 +76,18 @@ function Toolbar({ reviewText }: Props) {
   }
 
   return (
-    <div className="flex items-center bg-[#252526] text-[#ccc] px-3 py-2 border-b border-[#333] text-[13px] font-fira toolbar">
+    <div className="flex items-center bg-[#252526] text-[#ccc] px-3 py-2 border-b border-[#333] text-[13px] font-fira">
       <ul className="list-none flex m-0 p-0">
         <li className="flex items-center gap-2">
           <div className="relative">
-            <button onClick={toggleDropdown} className="lang-button">
+            <button
+              onClick={toggleDropdown}
+              className="flex items-center gap-1.5 bg-none text-[#ccc] text-sm transition px-1.5 py-2 rounded-md cursor-pointer w-[115px] border border-[#444] hover:bg-[#3c3c3c] active:bg-[#ccc]  active:text-white"
+            >
               {selectedLang} <FontAwesomeIcon icon={faCaretDown} />
             </button>
             {dropdownOpen && (
-              <ul className="absolute top-9 left-0 flex flex-col bg-[#252526] border border-[#444] rounded-md p-1 w-full z-10 shadow-md dropdown">
+              <ul className="absolute top-9 left-0 flex flex-col bg-[#252526] border border-[#444] rounded-md p-1 w-full z-10 shadow-md">
                 {languages.map((lang) => (
                   <li
                     className="py-2 px-3 text-[#ccc] cursor-pointer hover:bg-[#3c3c3c] transition"
@@ -98,8 +100,18 @@ function Toolbar({ reviewText }: Props) {
               </ul>
             )}
           </div>
-          <button onClick={run_code}>Run </button>
-          <button onClick={handleReviewClick}>Review Code</button>
+          <button
+            onClick={run_code}
+            className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
+          >
+            Run{" "}
+          </button>
+          <button
+            onClick={handleReviewClick}
+            className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
+          >
+            Review Code
+          </button>
         </li>
       </ul>
     </div>
