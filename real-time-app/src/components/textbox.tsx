@@ -93,7 +93,7 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
         ref={textareaRef}
         onInput={handleInput}
         placeholder="Enter your text here"
-        className="flex-1 p-[12px] text-sm leading-[1.5] text-[#d4d4d4] font-fira bg-[#1e1e1e] outline-none textarea"
+        className="flex-1 p-[12px] text-sm leading-[1.5] text-[#d4d4d4] font-fira bg-[#1e1e1e] outline-none textarea resize-none"
       />
     </div>
   );

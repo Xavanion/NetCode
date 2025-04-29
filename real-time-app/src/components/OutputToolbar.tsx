@@ -1,8 +1,8 @@
-import '../styles/Toolbar.css';
+import "../styles/Toolbar.css";
 
 type Props = {
-  activeOutput: 'terminal' | 'review';
-  setActiveOutput: (val: 'terminal' | 'review') => void;
+  activeOutput: "terminal" | "review";
+  setActiveOutput: (val: "terminal" | "review") => void;
 };
 
 /*
@@ -19,23 +19,23 @@ type Props = {
 */
 function OutputToolbar({ activeOutput, setActiveOutput }: Props) {
   return (
-    <div className="toolbar">
-        <ul>
-            <li>
-                <button
-                    className={activeOutput === 'terminal' ? 'active' : ''}
-                    onClick={() => setActiveOutput('terminal')}
-                >
-                    Terminal
-                </button>
-                <button
-                    className={activeOutput === 'review' ? 'active' : ''}
-                    onClick={() => setActiveOutput('review')}
-                >
-                    Review
-                </button>
-            </li>
-        </ul>
+    <div className="flex items-center bg-[#252526] text-[#ccc] p-2 border-b border-[#333] text-[13px] font-fira toolbar">
+      <ul className="list-none flex m-0 p-0">
+        <li className="flex items-center gap-2">
+          <button
+            className={activeOutput === "terminal" ? "active" : ""}
+            onClick={() => setActiveOutput("terminal")}
+          >
+            Terminal
+          </button>
+          <button
+            className={activeOutput === "review" ? "active" : ""}
+            onClick={() => setActiveOutput("review")}
+          >
+            Review
+          </button>
+        </li>
+      </ul>
     </div>
   );
 }

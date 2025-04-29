@@ -1,12 +1,11 @@
-import '../styles/outputBox.css';
-import ReactMarkdown from 'react-markdown';
+import "../styles/outputBox.css";
+import ReactMarkdown from "react-markdown";
 
 type Props = {
   curText: string;
-  activeOutput: 'terminal' | 'review';
+  activeOutput: "terminal" | "review";
   id: string;
 };
-
 
 /*
   Output box Component:
@@ -25,18 +24,20 @@ type Props = {
 function Outputbox({ curText, activeOutput, id }: Props) {
   return (
     <div className="outputbox-container">
-      {activeOutput === 'terminal' ? (
+      {activeOutput === "terminal" ? (
         <textarea
           readOnly
-		  id={id}
+          id={id}
           value={curText}
           placeholder="Output will be shown here"
           className="output_textarea"
         />
       ) : (
         <div className="output_markdown_scroll">
-          {curText.trim() === '' ? (
-            <div className="markdown-placeholder">Code review will be shown here</div>
+          {curText.trim() === "" ? (
+            <div className="markdown-placeholder">
+              Code review will be shown here
+            </div>
           ) : (
             <ReactMarkdown>{curText}</ReactMarkdown>
           )}

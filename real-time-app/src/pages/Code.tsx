@@ -1,11 +1,9 @@
-import Textbox from '../components/textbox';
-import Outputbox from '../components/outputBox';
-import Toolbar from '../components/Toolbar';
-import OutputToolbar from '../components/OutputToolbar';
-import { useRopes } from '../hooks/useRopes';
-import { useState } from 'react';
-
-
+import Textbox from "../components/textbox";
+import Outputbox from "../components/outputBox";
+import Toolbar from "../components/Toolbar";
+import OutputToolbar from "../components/OutputToolbar";
+import { useRopes } from "../hooks/useRopes";
+import { useState } from "react";
 
 /*
   Home Component
@@ -31,31 +29,37 @@ import { useState } from 'react';
     - Right Pane: OutputToolbar for switching views, Outputbox for display
 */
 function Code() {
-  const [text, updateText, outputText, incomingOp ] = useRopes()
-  const [responseText, setReviewText] = useState('');
-  const [activeOutput, setActiveOutput] = useState<'terminal' | 'review'>('terminal');
-
+  const [text, updateText, outputText, incomingOp] = useRopes();
+  const [responseText, setReviewText] = useState("");
+  const [activeOutput, setActiveOutput] = useState<"terminal" | "review">(
+    "terminal"
+  );
 
   return (
     <div className="flex flex-col flex-1 p-[20px]">
-      <h1 className='ml-2 mb-2 text-4xl font-bold'>Codin time</h1>
+      <h1 className="ml-2 mb-2 text-4xl font-bold">Codin time</h1>
       <div className="flex flex-row w-full flex-1">
         {/* Input Box */}
         <div className="w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded">
-          <Toolbar reviewText={setReviewText}/>
-          <Textbox curText={text} setText={updateText} incomingOp={incomingOp} id="mainInput"/>
+          <Toolbar reviewText={setReviewText} />
+          <Textbox
+            curText={text}
+            setText={updateText}
+            incomingOp={incomingOp}
+            id="mainInput"
+          />
         </div>
 
         {/* Output Box */}
-        <div className='w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded'>
+        <div className="w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded">
           <OutputToolbar
             activeOutput={activeOutput}
             setActiveOutput={setActiveOutput}
           />
           <Outputbox
-            curText={activeOutput === 'terminal' ? outputText : responseText}
+            curText={activeOutput === "terminal" ? outputText : responseText}
             activeOutput={activeOutput}
-			      id="mainOutput"
+            id="mainOutput"
           />
         </div>
       </div>
