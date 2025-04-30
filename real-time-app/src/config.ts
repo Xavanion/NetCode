@@ -10,10 +10,12 @@ declare global {
   interface Window {
     APP_CONFIG?: {
       roomId?: string;
+      port?: number;
     };
   }
 }
 
 export const AppConfig = window.APP_CONFIG ?? {
   roomId: getRoomIdFromUrl() ?? "four",
+  port: 9090,
 };

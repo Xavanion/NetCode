@@ -1,6 +1,6 @@
 // hooks/WebSocketContext.tsx
-import React, { createContext, useContext, useEffect, useRef } from 'react';
-import { AppConfig } from '../config';
+import React, { createContext, useContext, useEffect, useRef } from "react";
+import { AppConfig } from "../config";
 
 console.log(AppConfig.roomId);
 
@@ -8,8 +8,8 @@ console.log(AppConfig.roomId);
   Create a WebSocket context using React Context API.
   This allows components across the app to access a shared WebSocket connection.
 */
-const WebSocketContext = createContext<React.MutableRefObject<WebSocket | null> | null>(null);
-
+const WebSocketContext =
+  createContext<React.MutableRefObject<WebSocket | null> | null>(null);
 
 /* 
   WebSocketProvider Component:
@@ -22,12 +22,16 @@ const WebSocketContext = createContext<React.MutableRefObject<WebSocket | null> 
     - Closes the socket on unmount
     - Supplies the socket via context to children
 */
-export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    socketRef.current = new WebSocket(`ws://${hostname}:8080/api/ws?room=${AppConfig.roomId}`);
+    socketRef.current = new WebSocket(
+      `ws://${hostname}:${AppConfig.port}/api/ws?room=${AppConfig.roomId}`
+    );
     socketRef.current.onopen = () => {
       console.log("Connected");
     };
@@ -46,8 +50,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 };
 
-
-
 /* 
   useWS Hook:
     Custom hook to access the shared WebSocket instance.
@@ -55,6 +57,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 */
 export const useWS = () => {
   const context = useContext(WebSocketContext);
-  if (!context) throw new Error("useWS must be used inside a WebSocketProvider");
+  if (!context)
+    throw new Error("useWS must be used inside a WebSocketProvider");
   return context;
 };

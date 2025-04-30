@@ -39,7 +39,7 @@ function Toolbar({ reviewText }: Props) {
 
   async function run_code() {
     try {
-      const response = await fetch(`http://${hostname}:8080/api`, {
+      const response = await fetch(`http://${hostname}:${AppConfig.port}/api`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ function Toolbar({ reviewText }: Props) {
 
   async function handleReviewClick() {
     try {
-      const response = await fetch(`http://${hostname}:8080/api`, {
+      const response = await fetch(`http://${hostname}:${AppConfig.port}/api`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ event: "code_review", room: AppConfig.roomId }),
