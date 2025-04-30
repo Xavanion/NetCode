@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
-	roomhandler "github.com/Xavanion/Hack-KU-2025/backend/room-handling"
+	roomhandler "github.com/Xavanion/NetCode/backend/room-handling"
 )
 
 // Upgrade HTTP request to WS connection

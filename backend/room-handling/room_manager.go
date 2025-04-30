@@ -11,9 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
-	aireview "github.com/Xavanion/Hack-KU-2025/backend/ai-review"
-	codehandler "github.com/Xavanion/Hack-KU-2025/backend/code-handling"
-	rope "github.com/Xavanion/Hack-KU-2025/backend/rope"
+	aireview "github.com/Xavanion/NetCode/backend/ai-review"
+	codehandler "github.com/Xavanion/NetCode/backend/code-handling"
+	rope "github.com/Xavanion/NetCode/backend/rope"
 )
 
 // This is the struct used for an individual room that people can connect to

@@ -1,4 +1,4 @@
-module github.com/Xavanion/Hack-KU-2025
+module github.com/Xavanion/NetCode
 
 go 1.23.7
 
