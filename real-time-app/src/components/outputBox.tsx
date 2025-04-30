@@ -1,4 +1,3 @@
-import "../styles/outputBox.css";
 import ReactMarkdown from "react-markdown";
 
 type Props = {
