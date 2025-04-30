@@ -23,19 +23,19 @@ type Props = {
 */
 function Outputbox({ curText, activeOutput, id }: Props) {
   return (
-    <div className="font-fira flex flex-1 flex-col h-full p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] border-none resize-none outline-none outputbox-container">
+    <div className="font-fira flex flex-1 flex-col h-full p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] border-none resize-none outline-none">
       {activeOutput === "terminal" ? (
         <textarea
           readOnly
           id={id}
           value={curText}
           placeholder="Output will be shown here"
-          className="output_textarea"
+          className="flex-1 p-3 border-none outline-none resize-none w-full h-full"
         />
       ) : (
-        <div className="output_markdown_scroll">
+        <div className="flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] w-full h-full border-none outline-none resize-none">
           {curText.trim() === "" ? (
-            <div className="markdown-placeholder">
+            <div className="flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] w-full h-full overflow-y-auto border-none outline-none resize-none">
               Code review will be shown here
             </div>
           ) : (

@@ -39,17 +39,20 @@ function Toolbar({ reviewText }: Props) {
 
   async function run_code() {
     try {
-      const response = await fetch(`http://${hostname}:${AppConfig.port}/api`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          event: "run_code",
-          language: selectedLang,
-          room: AppConfig.roomId,
-        }),
-      });
+      const response = await fetch(
+        `${location.protocol}//${hostname}:${AppConfig.port}/api`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            event: "run_code",
+            language: selectedLang,
+            room: AppConfig.roomId,
+          }),
+        }
+      );
       if (response.ok) {
         console.log("Run successful");
       }
@@ -60,11 +63,17 @@ function Toolbar({ reviewText }: Props) {
 
   async function handleReviewClick() {
     try {
-      const response = await fetch(`http://${hostname}:${AppConfig.port}/api`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ event: "code_review", room: AppConfig.roomId }),
-      });
+      const response = await fetch(
+        `${location.protocol}//${hostname}:${AppConfig.port}/api`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "code_review",
+            room: AppConfig.roomId,
+          }),
+        }
+      );
       if (response.ok) {
         console.log("Code Review sent successfully");
         const data = await response.json();
