@@ -30,7 +30,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const hostname = window.location.hostname;
     socketRef.current = new WebSocket(
-      `ws://${hostname}:${AppConfig.port}/api/ws?room=${AppConfig.roomId}`
+      `${AppConfig.protocol}//${hostname}:${AppConfig.port}/api/ws?room=${AppConfig.roomId}`
     );
     socketRef.current.onopen = () => {
       console.log("Connected");

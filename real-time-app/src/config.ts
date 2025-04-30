@@ -11,6 +11,7 @@ declare global {
     APP_CONFIG?: {
       roomId?: string;
       port?: number;
+      protocol?: string;
     };
   }
 }
@@ -18,4 +19,5 @@ declare global {
 export const AppConfig = window.APP_CONFIG ?? {
   roomId: getRoomIdFromUrl() ?? "four",
   port: 9090,
+  protocol: location.protocol === "https:" ? "wss:" : "ws",
 };
