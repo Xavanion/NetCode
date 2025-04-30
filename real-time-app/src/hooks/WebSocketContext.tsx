@@ -28,16 +28,20 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const hostname = window.location.hostname;
-    socketRef.current = new WebSocket(
-      `${AppConfig.protocol}//${hostname}:${AppConfig.port}/api/ws?room=${AppConfig.roomId}`
-    );
+    const port = window.location.protocol === "https:" ? "" : ":9090";
+    const url = `${protocol}//${hostname}${port}/api/ws?room=${AppConfig.roomId}`;
+    socketRef.current = new WebSocket(url);
+
     socketRef.current.onopen = () => {
       console.log("Connected");
     };
+
     socketRef.current.onclose = () => {
       console.log("Disconnected");
     };
+
     return () => {
       socketRef.current?.close();
     };
