@@ -7,6 +7,72 @@
   --font-fira: "Fira Code", monospace;
 }
 
+.btn-base {
+  @apply font-semibold text-lg px-6 py-3 rounded-xl transition-all duration-200;
+}
+
+.btn-flat {
+  @apply bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white;
+}
+
+.textbox {
+  @apply flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] outline-none resize-none;
+}
+
+@font-face {
+  font-family: "Fira Code";
+  src: url("/fonts/FiraCode-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: #14181d;
+  }
+  html {
+    font-size: clamp(100%, 1.2vw + 0.5rem, 115%);
+  }
+  button {
+    cursor: pointer;
+  }
+  h1 {
+    font-family: "Fira Code", monospace;
+    font-size: 48px;
+    line-height: 3rem;
+  }
+  h2 {
+    font-family: "Fira Code", monospace;
+    font-size: 36px;
+    line-height: 3rem;
+  }
+  h3 {
+    font-family: "Fira Code", monospace;
+    font-size: 25px;
+    line-height: 3rem;
+  }
+}
+
+@layer components {
+  .nav-item {
+    font-family: "Fira Code", monospace;
+    font-size: 20px;
+    line-height: 1.5rem;
+    color: #b5b0b0;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

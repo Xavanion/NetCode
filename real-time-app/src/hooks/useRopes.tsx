@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { useWS } from './WebSocketContext';
-import RopeSequence from 'rope-sequence';
+import { useEffect, useRef, useState } from "react";
+import { useWS } from "@/hooks/WebSocketContext";
+import RopeSequence from "rope-sequence";
 
 /* 
   Define and export RopeOperation type.
@@ -8,21 +8,23 @@ import RopeSequence from 'rope-sequence';
     - Insert a value at a position
     - Delete a range from 'from' to 'to'
 */
-export type RopeOperation = {
-  event: 'text_update';
-  type: 'insert';
-  pos: number;
-  value: string;
-  version: number;
-  author: number;
-} | {
-  event: 'text_update';
-  type: 'delete';
-  from: number;
-  to: number;
-  version: number;
-  author: number;
-};
+export type RopeOperation =
+  | {
+      event: "text_update";
+      type: "insert";
+      pos: number;
+      value: string;
+      version: number;
+      author: number;
+    }
+  | {
+      event: "text_update";
+      type: "delete";
+      from: number;
+      to: number;
+      version: number;
+      author: number;
+    };
 
 /* 
   Custom hook useRopes
@@ -49,16 +51,20 @@ export type RopeOperation = {
   Returns:
     [inputText, updateInputText, outputText]
 */
-export function useRopes(): [string, (newText:string) => void, string, (RopeOperation[])] {
+export function useRopes(): [
+  string,
+  (newText: string) => void,
+  string,
+  RopeOperation[]
+] {
   const rope = useRef(RopeSequence.empty as RopeSequence<string>); // Create rope
-  const [text, setText] = useState(''); // Create text for use in setting textbox
-  const [outputText, setOutput] = useState(''); // Set output box
+  const [text, setText] = useState(""); // Create text for use in setting textbox
+  const [outputText, setOutput] = useState(""); // Set output box
   const [incomingOp, setIncomingOp] = useState<RopeOperation[]>([]); // Set for use with passing & dealing with operation length adjustments
   const localVersion = useRef(0); // Used for operational transformations
   const localUID = useRef(0);
   const socket = useWS(); // Connect to context web socket
   const debug: boolean = true; // Boolean used for debugging
-
 
   /* 
     Apply a rope operation (insert/delete) to the current rope
@@ -66,17 +72,19 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
   */
   const applyOp = (op: RopeOperation, version_mismatch_present: boolean) => {
     let curRope = rope.current;
-    setIncomingOp(oldArray => [...oldArray, op]); // Set for use with other components
-    if (version_mismatch_present){
-      console.log(`Version mismatch detected. Local: ${localVersion.current}, Received: ${op.version}`);
+    setIncomingOp((oldArray) => [...oldArray, op]); // Set for use with other components
+    if (version_mismatch_present) {
+      console.log(
+        `Version mismatch detected. Local: ${localVersion.current}, Received: ${op.version}`
+      );
     }
     // Check op type and then append new value where it needs to go
-    if (op.type === 'insert'){
-      const before = curRope.slice(0,op.pos);
+    if (op.type === "insert") {
+      const before = curRope.slice(0, op.pos);
       const after = curRope.slice(op.pos);
       curRope = before.append(Array.from(op.value)).append(after);
-    }else if (op.type === 'delete'){
-      const before = curRope.slice(0,op.from);
+    } else if (op.type === "delete") {
+      const before = curRope.slice(0, op.from);
       const after = curRope.slice(op.to);
       curRope = before.append(after);
     }
@@ -84,8 +92,7 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
     rope.current = curRope;
     const curText = ropeToString(rope.current);
     setText(curText);
-  }
-
+  };
 
   /* 
     Convert a rope data structure into a flat string
@@ -96,9 +103,8 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
     rope.forEach((value: string) => {
       flattened.push(value);
     });
-    return flattened.join('');
+    return flattened.join("");
   }
-
 
   /* 
     Set initial text in the rope and input state
@@ -109,31 +115,34 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
     setText(newText);
   }
 
-
   /* 
     Update rope based on user input changes
     Calculates difference and creates a minimal operation (insert/delete)
     Then broadcasts the operation via WebSocket
   */
-  function updateText(newText: string){
+  function updateText(newText: string) {
     const oldText = ropeToString(rope.current);
 
     // Progress i to where text is different
     let i = 0;
-    while (i < newText.length && i < oldText.length && newText[i] === oldText[i]){
+    while (
+      i < newText.length &&
+      i < oldText.length &&
+      newText[i] === oldText[i]
+    ) {
       i++;
     }
 
     let op: RopeOperation;
 
-    if (oldText.length > newText.length){
+    if (oldText.length > newText.length) {
       // Deletion
       let difference = oldText.length - newText.length; // Find the amount deleted
       op = {
-        event: 'text_update',
-        type: 'delete',
+        event: "text_update",
+        type: "delete",
         from: i,
-        to: i+difference,
+        to: i + difference,
         version: localVersion.current,
         author: localUID.current,
       };
@@ -141,18 +150,18 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
       // Insertion
       const inserted = newText.slice(i, newText.length - (oldText.length - i)); // Find length of what to insert
       op = {
-        event: 'text_update',
-        type: 'insert',
+        event: "text_update",
+        type: "insert",
         pos: i,
-        value:inserted,
+        value: inserted,
         version: localVersion.current,
         author: localUID.current,
       };
     }
- 
+
     applyOp(op, false);
     socket.current?.send(JSON.stringify(op)); // Pass op to others
-    localVersion.current++
+    localVersion.current++;
 
     if (debug) {
       console.log(`Local version incremented to ${localVersion.current}`);
@@ -170,7 +179,8 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
 
     // Function for when attached
     function attachOnMessage(ws: WebSocket) {
-      if (debug) console.log('WebSocket connected, attaching onmessage handler');
+      if (debug)
+        console.log("WebSocket connected, attaching onmessage handler");
 
       //socket.current?.send("one");
 
@@ -187,32 +197,46 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
 
         // Switch statement to tell event from front-end
         switch (data.event) {
-          case 'input_update': // User text update
+          case "input_update": // User text update
             applyOp(op, false);
             break;
-          case 'version_mismatch_update':
+          case "version_mismatch_update":
             applyOp(op, true);
-            console.log(`VERSION MISMATCH HANDLED:\nLOCAL: ${localVersion.current}\nSERVER: ${data.update.version}`);
+            console.log(
+              `VERSION MISMATCH HANDLED:\nLOCAL: ${localVersion.current}\nSERVER: ${data.update.version}`
+            );
             localVersion.current = data.update.version;
             break;
-          case 'output_update': // User click run
+          case "output_update": // User click run
             setOutput(data.update);
             break;
-          case 'connection_update': // User connects and needs to update data in input
-            if (typeof data.update.text === 'string') {
+          case "connection_update": // User connects and needs to update data in input
+            if (typeof data.update.text === "string") {
               setInitialText(data.update.text);
-            } else{
-              console.log('Connection update text not recieved as a string:', data.update.text); // Debug line
+            } else {
+              console.log(
+                "Connection update text not recieved as a string:",
+                data.update.text
+              ); // Debug line
             }
-            if(typeof data.update.version === 'number' && Number(localVersion.current) === 0){
+            if (
+              typeof data.update.version === "number" &&
+              Number(localVersion.current) === 0
+            ) {
               localVersion.current = data.update.version;
-            } else{
-              console.log('Connection update version not recieved as a number:', data.update.version); // Debug line
+            } else {
+              console.log(
+                "Connection update version not recieved as a number:",
+                data.update.version
+              ); // Debug line
             }
-            if(typeof data.update.uid === 'number'){
+            if (typeof data.update.uid === "number") {
               localUID.current = data.update.uid;
-            } else{
-              console.log('Connection update uid not recieved as a number:', data.update.uid);
+            } else {
+              console.log(
+                "Connection update uid not recieved as a number:",
+                data.update.uid
+              );
             }
             break;
           default:
@@ -236,7 +260,6 @@ export function useRopes(): [string, (newText:string) => void, string, (RopeOper
 
     return () => clearInterval(interval); // Cleanup
   }, [socket.current]);
-
 
   /*
     Return hook values:

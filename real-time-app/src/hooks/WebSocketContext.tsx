@@ -1,6 +1,6 @@
 // hooks/WebSocketContext.tsx
 import React, { createContext, useContext, useEffect, useRef } from "react";
-import { AppConfig } from "../config";
+import { AppConfig } from "@/config";
 
 console.log(AppConfig.roomId);
 

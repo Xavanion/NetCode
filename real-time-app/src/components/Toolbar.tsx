@@ -85,21 +85,21 @@ function Toolbar({ reviewText }: Props) {
   }
 
   return (
-    <div className="flex items-center bg-[#252526] text-[#ccc] px-3 py-2 border-b border-[#333] text-[13px] font-fira">
-      <ul className="list-none flex m-0 p-0">
+    <div className="flex items-center bg-[#252526] text-[#ccc] px-3 py-2 border-b border-[#333] text-xs font-fira">
+      <ul className="flex">
         <li className="flex items-center gap-2">
           <div className="relative">
             <button
               onClick={toggleDropdown}
-              className="flex items-center gap-1.5 bg-none text-[#ccc] text-sm transition px-1.5 py-2 rounded-md cursor-pointer w-[115px] border border-[#444] hover:bg-[#3c3c3c] active:bg-[#ccc]  active:text-white"
+              className="flex items-center gap-1.5 bg-none text-sm transition px-2 py-2 rounded-md w-[115px] border active:bg-[#cccccc35]"
             >
               {selectedLang} <FontAwesomeIcon icon={faCaretDown} />
             </button>
             {dropdownOpen && (
-              <ul className="absolute top-9 left-0 flex flex-col bg-[#252526] border border-[#444] rounded-md p-1 w-full z-10 shadow-md">
+              <ul className="absolute top-9 left-0 flex flex-col bg-[#252526] border rounded-md w-full z-10">
                 {languages.map((lang) => (
                   <li
-                    className="py-2 px-3 text-[#ccc] cursor-pointer hover:bg-[#3c3c3c] transition"
+                    className="py-2 px-2 cursor-pointer hover:bg-[#3c3c3c] transition"
                     key={lang}
                     onClick={() => selectLanguage(lang)}
                   >
@@ -109,16 +109,10 @@ function Toolbar({ reviewText }: Props) {
               </ul>
             )}
           </div>
-          <button
-            onClick={run_code}
-            className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
-          >
+          <button onClick={run_code} className="btn-flat">
             Run
           </button>
-          <button
-            onClick={handleReviewClick}
-            className="bg-none border-none text-[#ccc] px-1.5 py-3 rounded-sm cursor-pointer text-sm transition hover:bg-[#3c3c3c] active:bg-[#ccc] active:text-white"
-          >
+          <button onClick={handleReviewClick} className="btn-flat">
             Review Code
           </button>
         </li>

@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react';
-import type { RopeOperation } from '../hooks/useRopes';
-
+import { useEffect, useRef } from "react";
+import type { RopeOperation } from "../hooks/useRopes";
 
 type Props = {
   curText: string;
@@ -8,7 +7,6 @@ type Props = {
   incomingOp: RopeOperation[];
   id: string;
 };
-
 
 /*
   Textbox Component:
@@ -34,7 +32,7 @@ type Props = {
 */
 function Textbox({ curText, setText, incomingOp, id }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const lastTextRef = useRef<string>(''); // Keep last known value
+  const lastTextRef = useRef<string>(""); // Keep last known value
   const cursorRef = useRef<number>(0); // Keep cursor position
 
   // Used to handle user-inputted changes
@@ -46,7 +44,6 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
     // Grad current value from DOM and save where cursor is
     const newText = textarea.value;
     cursorRef.current = textarea.selectionStart ?? 0;
-
 
     // Only update text changed
     if (newText !== lastTextRef.current) {
@@ -65,15 +62,15 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
     if (curText !== lastTextRef.current) {
       // Grab cursor, update text and restore cursor
       let currentCursor = textarea.selectionStart ?? 0;
-      while(incomingOp.length > 0){
-        var headOp = incomingOp.shift()
+      while (incomingOp.length > 0) {
+        var headOp = incomingOp.shift();
         if (!headOp) return;
-        if(headOp.type === 'insert' && headOp.pos <= currentCursor){
+        if (headOp.type === "insert" && headOp.pos <= currentCursor) {
           currentCursor += headOp.value.length;
-        } else if (headOp.type === 'delete'){
-          if (headOp.to <= currentCursor){
-            currentCursor -= (headOp.to - headOp.from);
-          } else if (headOp.from < currentCursor && currentCursor < headOp.to){
+        } else if (headOp.type === "delete") {
+          if (headOp.to <= currentCursor) {
+            currentCursor -= headOp.to - headOp.from;
+          } else if (headOp.from < currentCursor && currentCursor < headOp.to) {
             currentCursor = headOp.from;
           }
         }
@@ -85,15 +82,14 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
     }
   }, [curText, incomingOp]);
 
-
   return (
     <div className="flex flex-1">
       <textarea
-		    id={id}
+        id={id}
         ref={textareaRef}
         onInput={handleInput}
         placeholder="Enter your text here"
-        className="flex-1 p-[12px] text-sm leading-[1.5] text-[#d4d4d4] font-fira bg-[#1e1e1e] outline-none textarea resize-none"
+        className="textbox font-fira"
       />
     </div>
   );

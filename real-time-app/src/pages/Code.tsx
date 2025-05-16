@@ -1,8 +1,8 @@
-import Textbox from "../components/textbox";
-import Outputbox from "../components/outputBox";
-import Toolbar from "../components/Toolbar";
-import OutputToolbar from "../components/OutputToolbar";
-import { useRopes } from "../hooks/useRopes";
+import Textbox from "@/components/textbox";
+import Outputbox from "@/components/outputBox";
+import Toolbar from "@/components/Toolbar";
+import OutputToolbar from "@/components/OutputToolbar";
+import { useRopes } from "@/hooks/useRopes";
 import { useState } from "react";
 
 /*

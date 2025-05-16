@@ -22,7 +22,7 @@ type Props = {
 */
 function Outputbox({ curText, activeOutput, id }: Props) {
   return (
-    <div className="font-fira flex flex-1 flex-col h-full p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] border-none resize-none outline-none">
+    <div className="font-fira flex flex-1 flex-col p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] border-none resize-none outline-none">
       {activeOutput === "terminal" ? (
         <textarea
           readOnly
@@ -32,11 +32,11 @@ function Outputbox({ curText, activeOutput, id }: Props) {
           className="flex-1 p-3 border-none outline-none resize-none w-full h-full"
         />
       ) : (
-        <div className="flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] w-full h-full border-none outline-none resize-none">
+        <div className="w-full h-full border-none overflow-y-auto textbox">
           {curText.trim() === "" ? (
-            <div className="flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] w-full h-full overflow-y-auto border-none outline-none resize-none">
+            <span className="text-gray-300 opacity-50">
               Code review will be shown here
-            </div>
+            </span>
           ) : (
             <ReactMarkdown>{curText}</ReactMarkdown>
           )}
