@@ -37,10 +37,9 @@ function Code() {
 
   return (
     <div className="flex flex-col flex-1 p-[20px]">
-      <h1 className="ml-2 mb-2 text-4xl font-bold">Codin time</h1>
       <div className="flex flex-row w-full flex-1">
         {/* Input Box */}
-        <div className="w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded">
+        <div className="flex flex-col flex-[3] mr-[10px] overflow-hidden">
           <Toolbar reviewText={setReviewText} />
           <Textbox
             curText={text}
@@ -51,7 +50,7 @@ function Code() {
         </div>
 
         {/* Output Box */}
-        <div className="w-1/2 flex flex-col flex-1 mr-[10px] overflow-hidden border border-[#ccc] rounded">
+        <div className="flex flex-col flex-[2] overflow-hidden border-2 border-[#213030] rounded">
           <OutputToolbar setActiveOutput={setActiveOutput} />
           <Outputbox
             curText={activeOutput === "terminal" ? outputText : responseText}

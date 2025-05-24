@@ -1,11 +1,6 @@
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import { AppConfig } from "../config";
-
-type Props = {
-  reviewText: (text: string) => void;
-};
+import { AppConfig } from "@/config";
+import LanguageSelector from "@/components/LanguageSelector";
 
 /* 
 Tool Bar Component:
@@ -24,18 +19,14 @@ Dependencies:
   - FontAwesome (For dropdown icon)
   - Appconfig for room ID/Config
 */
+
+type Props = {
+  reviewText: (text: string) => void;
+};
+
 function Toolbar({ reviewText }: Props) {
-  const [selectedLang, setLanguage] = useState("C");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggleDropdown = () => setDropdownOpen((prev) => !prev);
-
-  const languages = ["C", "Python", "Java", "C++", "Go", "Rust", "TypeScript"];
+  const [selectedLang, setLanguage] = useState({ id: 2, name: "C" });
   const hostname = window.location.hostname;
-
-  const selectLanguage = (lang: string) => {
-    setLanguage(lang);
-    setDropdownOpen(false);
-  };
 
   async function run_code() {
     try {
@@ -48,7 +39,7 @@ function Toolbar({ reviewText }: Props) {
           },
           body: JSON.stringify({
             event: "run_code",
-            language: selectedLang,
+            language: selectedLang.name,
             room: AppConfig.roomId,
           }),
         }
@@ -85,34 +76,23 @@ function Toolbar({ reviewText }: Props) {
   }
 
   return (
-    <div className="flex items-center bg-[#252526] text-[#ccc] px-3 py-2 border-b border-[#333] text-xs font-fira">
+    <div className="flex items-center text-[#ccc] py-2 text-xs font-fira">
       <ul className="flex">
-        <li className="flex items-center gap-2">
-          <div className="relative">
-            <button
-              onClick={toggleDropdown}
-              className="flex items-center gap-1.5 bg-none text-sm transition px-2 py-2 rounded-md w-[115px] border active:bg-[#cccccc35]"
-            >
-              {selectedLang} <FontAwesomeIcon icon={faCaretDown} />
-            </button>
-            {dropdownOpen && (
-              <ul className="absolute top-9 left-0 flex flex-col bg-[#252526] border rounded-md w-full z-10">
-                {languages.map((lang) => (
-                  <li
-                    className="py-2 px-2 cursor-pointer hover:bg-[#3c3c3c] transition"
-                    key={lang}
-                    onClick={() => selectLanguage(lang)}
-                  >
-                    {lang}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <button onClick={run_code} className="btn-flat">
+        <li className="flex items-center gap-10">
+          <LanguageSelector
+            selected={selectedLang}
+            onChange={(lang) => setLanguage(lang)}
+          />
+          <button
+            onClick={run_code}
+            className="btn-flat bg-run px-5 py-2 rounded-md border border-Cborder active:bg-run-hover"
+          >
             Run
           </button>
-          <button onClick={handleReviewClick} className="btn-flat">
+          <button
+            onClick={handleReviewClick}
+            className="btn-flat bg-white/5 px-5 py-2 rounded-md border border-Cborder active:bg-[#cccccc35]"
+          >
             Review Code
           </button>
         </li>

@@ -5,6 +5,17 @@
 
 @theme {
   --font-fira: "Fira Code", monospace;
+  --color-bg: #081115;
+  --color-panel: #030a0d;
+  --color-Cborder: #20454f;
+  --color-code: #6eddcf;
+  --color-keyword: #5fffd7;
+  --color-placeholder: #6c737c;
+  --color-run: #1f998d;
+  --color-run-hover: #3da89f;
+  --color-tab-active: #7cf9e5;
+  --color-output: #ededed;
+  --color-accent: #73e8c4;
 }
 
 .btn-base {
@@ -16,7 +27,7 @@
 }
 
 .textbox {
-  @apply flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] outline-none resize-none;
+  @apply flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-panel outline-none resize-none;
 }
 
 @font-face {
@@ -181,9 +192,6 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
     @apply bg-background text-foreground;
   }

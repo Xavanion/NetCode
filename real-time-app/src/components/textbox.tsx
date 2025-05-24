@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RopeOperation } from "../hooks/useRopes";
+import LineNum from "@/components/LineNum";
 
 type Props = {
   curText: string;
@@ -34,6 +35,9 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastTextRef = useRef<string>(""); // Keep last known value
   const cursorRef = useRef<number>(0); // Keep cursor position
+
+  // TODO: Add Line Count feature
+  const [numLines, setNumLines] = useState(1);
 
   // Used to handle user-inputted changes
   const handleInput = () => {
@@ -83,7 +87,8 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
   }, [curText, incomingOp]);
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 flex-row border-2 border-[#213030] rounded">
+      <LineNum lineCount={numLines} />
       <textarea
         id={id}
         ref={textareaRef}
