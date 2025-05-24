@@ -13,13 +13,13 @@
   --color-placeholder: #6c737c;
   --color-run: #1f998d;
   --color-run-hover: #3da89f;
-  --color-tab-active: #7cf9e5;
+  --color-tab-active: #7af6e3;
   --color-output: #ededed;
   --color-accent: #73e8c4;
 }
 
 .btn-base {
-  @apply font-semibold text-lg px-6 py-3 rounded-xl transition-all duration-200;
+  @apply font-semibold cursor-pointer text-lg px-6 py-3 rounded-xl transition-all duration-200;
 }
 
 .btn-flat {

@@ -85,7 +85,7 @@ function Toolbar({ reviewText }: Props) {
           />
           <button
             onClick={run_code}
-            className="btn-flat bg-run px-5 py-2 rounded-md border border-Cborder active:bg-run-hover"
+            className="btn-flat bg-run px-5 py-2 rounded-md border border-Cborder hover:bg-run-hover active:bg-tab-active"
           >
             Run
           </button>

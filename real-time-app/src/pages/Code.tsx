@@ -37,10 +37,10 @@ function Code() {
 
   return (
     <div className="flex flex-col flex-1 p-[20px]">
-      <div className="flex flex-row w-full flex-1">
+      <Toolbar reviewText={setReviewText} />
+      <div className="flex flex-row w-full flex-1 ">
         {/* Input Box */}
-        <div className="flex flex-col flex-[3] mr-[10px] overflow-hidden">
-          <Toolbar reviewText={setReviewText} />
+        <div className="flex flex-col flex-[3] overflow-hidden">
           <Textbox
             curText={text}
             setText={updateText}
@@ -50,8 +50,11 @@ function Code() {
         </div>
 
         {/* Output Box */}
-        <div className="flex flex-col flex-[2] overflow-hidden border-2 border-[#213030] rounded">
-          <OutputToolbar setActiveOutput={setActiveOutput} />
+        <div className="flex flex-col flex-[2] overflow-hidden border-2 border-l-0 border-[#213030] rounded">
+          <OutputToolbar
+            setActiveOutput={setActiveOutput}
+            activeOutput={activeOutput}
+          />
           <Outputbox
             curText={activeOutput === "terminal" ? outputText : responseText}
             activeOutput={activeOutput}
