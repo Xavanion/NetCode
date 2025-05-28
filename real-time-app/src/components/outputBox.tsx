@@ -22,7 +22,7 @@ type Props = {
 */
 function Outputbox({ curText, activeOutput, id }: Props) {
   return (
-    <div className="font-fira textbox">
+    <div className="font-fira textbox h-full">
       {activeOutput === "terminal" ? (
         <textarea
           readOnly

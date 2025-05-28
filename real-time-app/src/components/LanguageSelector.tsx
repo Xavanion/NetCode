@@ -40,7 +40,7 @@ export default function LanguageSelector({ selected, onChange }: Props) {
         });
 
   return (
-    <div className="mx-auto w-52">
+    <div>
       <Combobox
         value={selected}
         onChange={onChange}

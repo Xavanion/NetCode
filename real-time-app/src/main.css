@@ -27,7 +27,7 @@
 }
 
 .textbox {
-  @apply flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-panel outline-none resize-none;
+  @apply p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-panel outline-none resize-none w-full;
 }
 
 @font-face {
@@ -81,6 +81,20 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  .custom-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: #73e8c4;
+    border-radius: 2px;
+  }
+  .scroll-stable {
+    scrollbar-gutter: stable;
   }
 }
 

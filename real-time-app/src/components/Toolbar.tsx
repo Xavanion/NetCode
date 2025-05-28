@@ -76,27 +76,31 @@ function Toolbar({ reviewText }: Props) {
   }
 
   return (
-    <div className="flex items-center text-[#ccc] py-2 text-xs font-fira">
-      <ul className="flex">
-        <li className="flex items-center gap-10">
-          <LanguageSelector
-            selected={selectedLang}
-            onChange={(lang) => setLanguage(lang)}
-          />
-          <button
-            onClick={run_code}
-            className="btn-flat bg-run px-5 py-2 rounded-md border border-Cborder hover:bg-run-hover active:bg-tab-active"
-          >
-            Run
-          </button>
-          <button
-            onClick={handleReviewClick}
-            className="btn-flat bg-white/5 px-5 py-2 rounded-md border border-Cborder active:bg-[#cccccc35]"
-          >
-            Review Code
-          </button>
-        </li>
-      </ul>
+    <div
+      className="
+      flex flex-col md:flex-row
+      gap-2 md:gap-5
+      text-[#ccc] py-2 text-xs font-fira
+    "
+    >
+      <LanguageSelector
+        selected={selectedLang}
+        onChange={(lang) => setLanguage(lang)}
+      />
+
+      <button
+        onClick={run_code}
+        className="btn-flat bg-run px-5 py-2 rounded-md border border-Cborder hover:bg-run-hover active:bg-tab-active"
+      >
+        Run
+      </button>
+
+      <button
+        onClick={handleReviewClick}
+        className="btn-flat bg-white/5 px-5 py-2 rounded-md border border-Cborder active:bg-[#cccccc35]"
+      >
+        Review&nbsp;Code
+      </button>
     </div>
   );
 }
