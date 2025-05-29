@@ -117,14 +117,16 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
         onScroll={handleScroll}
       >
         <LineNum lineCount={numLines} scrollRef={lineNumRef} />
-        <textarea
-          id={id}
-          ref={textareaRef}
-          onInput={handleInput}
-          placeholder="Enter your text here"
-          className="textbox flex-1 font-fira min-h-[calc(100vh-25rem)] overflow-y-hidden custom-scroll"
-          wrap="off"
-        />
+        <div className="flex flex-1 h-full scroll-stable">
+          <textarea
+            id={id}
+            ref={textareaRef}
+            onInput={handleInput}
+            placeholder="Enter your text here"
+            className="textbox flex-1 font-fira min-h-[calc(100vh-25rem)] overflow-y-hidden custom-scroll"
+            wrap="off"
+          />
+        </div>
       </div>
     </div>
   );
