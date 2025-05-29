@@ -5,10 +5,21 @@
 
 @theme {
   --font-fira: "Fira Code", monospace;
+  --color-bg: #081115;
+  --color-panel: #030a0d;
+  --color-Cborder: #20454f;
+  --color-code: #6eddcf;
+  --color-keyword: #5fffd7;
+  --color-placeholder: #6c737c;
+  --color-run: #1f998d;
+  --color-run-hover: #3da89f;
+  --color-tab-active: #7af6e3;
+  --color-output: #ededed;
+  --color-accent: #73e8c4;
 }
 
 .btn-base {
-  @apply font-semibold text-lg px-6 py-3 rounded-xl transition-all duration-200;
+  @apply font-semibold cursor-pointer text-lg px-6 py-3 rounded-xl transition-all duration-200;
 }
 
 .btn-flat {
@@ -16,7 +27,7 @@
 }
 
 .textbox {
-  @apply flex-1 p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-[#1e1e1e] outline-none resize-none;
+  @apply p-3 text-sm leading-[1.5] text-[#d4d4d4] bg-panel outline-none resize-none w-full;
 }
 
 @font-face {
@@ -70,6 +81,20 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  .custom-scroll::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: #73e8c4;
+    border-radius: 2px;
+  }
+  .scroll-stable {
+    scrollbar-gutter: stable;
   }
 }
 
@@ -181,9 +206,6 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
     @apply bg-background text-foreground;
   }

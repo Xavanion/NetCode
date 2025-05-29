@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../assets/site_logo.png";
+import logo from "@/assets/site_logo-color.png";
 
 /*
   Navbar Component:
@@ -14,11 +14,11 @@ import logo from "../assets/site_logo.png";
 */
 function Navbar() {
   return (
-    <nav className="fixed top-0 w-full flex items-center justify-between h-[70px] sm:h-[60px] px-[20px] bg-[#063038] text-[#edf0f1] z-[1000]">
+    <nav className="fixed top-0 w-full flex items-center justify-between h-[70px] px-[20px] bg-bg border-b-1 border-Cborder text-[#edf0f1] z-[1000]">
       {/* Left section */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 ml-5 sm:ml-10">
         <Link
-          to="/"
+          to="/home"
           className="flex items-center text-[1.5rem] font-bold text-[#edf0f1] no-underline space-x-[0.5rem]"
         >
           <img src={logo} alt="Logo" className="h-[2.3rem] w-auto" />
@@ -32,8 +32,13 @@ function Navbar() {
       </div>
 
       {/* Right section */}
-      <div className="flex items-center space-x-4">
-        {/* Example: Add login/signup buttons here */}
+      <div className="flex items-center space-x-15 font-fira mr-5">
+        <Link to="/" className="hover:text-tab-active">
+          <p>Code</p>
+        </Link>
+        <Link to="/account" className="hover:text-tab-active">
+          <p>Login</p>
+        </Link>
       </div>
     </nav>
   );

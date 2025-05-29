@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RopeOperation } from "../hooks/useRopes";
+import LineNum from "@/components/LineNum";
 
 type Props = {
   curText: string;
@@ -32,14 +33,27 @@ type Props = {
 */
 function Textbox({ curText, setText, incomingOp, id }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const lastTextRef = useRef<string>(""); // Keep last known value
   const cursorRef = useRef<number>(0); // Keep cursor position
+  const lineNumRef = useRef<HTMLDivElement>(null);
+  const [numLines, setNumLines] = useState(1);
+
+  const updateLines = (codecontent: string) => {
+    const newLines = codecontent.split("\n").length;
+    setNumLines(newLines);
+  };
 
   // Used to handle user-inputted changes
   const handleInput = () => {
     // Grab the textarea DOM element
     const textarea = textareaRef.current;
     if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    textarea.style.width = "auto";
+    textarea.style.width = `${textarea.scrollWidth}px`;
 
     // Grad current value from DOM and save where cursor is
     const newText = textarea.value;
@@ -49,7 +63,13 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
     if (newText !== lastTextRef.current) {
       setText(newText);
       lastTextRef.current = newText;
+      updateLines(newText);
     }
+  };
+
+  const handleScroll = () => {
+    if (!lineNumRef.current || !wrapperRef.current) return;
+    lineNumRef.current.scrollTop = wrapperRef.current.scrollTop;
   };
 
   // Used to handle incoming changes
@@ -78,19 +98,36 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
 
       textarea.value = curText;
       lastTextRef.current = curText;
+
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+      textarea.style.width = "auto";
+      textarea.style.width = `${textarea.scrollWidth}px`;
+
       textarea.setSelectionRange(currentCursor, currentCursor);
+      updateLines(curText);
     }
   }, [curText, incomingOp]);
 
   return (
-    <div className="flex flex-1">
-      <textarea
-        id={id}
-        ref={textareaRef}
-        onInput={handleInput}
-        placeholder="Enter your text here"
-        className="textbox font-fira"
-      />
+    <div className="flex max-h-[calc(100vh-9.2rem)] h-full flex-row border-2 border-[#213030] rounded">
+      <div
+        className="flex flex-row w-full overflow-y-auto custom-scroll scroll-stable"
+        ref={wrapperRef}
+        onScroll={handleScroll}
+      >
+        <LineNum lineCount={numLines} scrollRef={lineNumRef} />
+        <div className="flex flex-1 h-full scroll-stable">
+          <textarea
+            id={id}
+            ref={textareaRef}
+            onInput={handleInput}
+            placeholder="Enter your text here"
+            className="textbox flex-1 font-fira min-h-[calc(100vh-25rem)] overflow-y-hidden custom-scroll"
+            wrap="off"
+          />
+        </div>
+      </div>
     </div>
   );
 }
