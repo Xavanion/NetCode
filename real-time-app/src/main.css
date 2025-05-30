@@ -16,6 +16,8 @@
   --color-tab-active: #7af6e3;
   --color-output: #ededed;
   --color-accent: #73e8c4;
+  --color-light-panel: #0f1f26;
+  --color-seperator: #152d38;
 }
 
 .btn-base {

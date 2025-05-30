@@ -120,7 +120,42 @@ export function useRopes(): [
     Calculates difference and creates a minimal operation (insert/delete)
     Then broadcasts the operation via WebSocket
   */
-  function updateText(newText: string) {
+  function updateText(
+    newText: string,
+    forceTab?: {
+      force: boolean;
+      start: number;
+      end: number;
+      replacement: string;
+    }
+  ) {
+    if (forceTab?.force) {
+      //console.log(`New: ${newText}`);
+      const before = rope.current.slice(0, forceTab.start);
+      const after = rope.current.slice(forceTab.end);
+      const middle = RopeSequence.from(Array.from(forceTab.replacement));
+      //console.log(`Before: ${ropeToString(before)}`);
+      //console.log(`After: ${ropeToString(after)}`);
+      //console.log(`Middle: ${ropeToString(middle)}`);
+      rope.current = before.append(middle).append(after);
+      const curText = ropeToString(rope.current);
+      setText(curText);
+      socket.current?.send(
+        JSON.stringify({
+          event: "text_update",
+          type: "insert", // or "replace", if you introduce a new op type
+          pos: forceTab.start,
+          value: forceTab.replacement,
+          from: forceTab.start,
+          to: forceTab.end,
+          version: localVersion.current,
+          author: localUID.current,
+        })
+      );
+      localVersion.current++;
+      return;
+    }
+
     const oldText = ropeToString(rope.current);
 
     // Progress i to where text is different

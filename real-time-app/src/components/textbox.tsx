@@ -4,7 +4,15 @@ import LineNum from "@/components/LineNum";
 
 type Props = {
   curText: string;
-  setText: (value: string) => void;
+  setText: (
+    value: string,
+    forceTab?: {
+      force: boolean;
+      start: number;
+      end: number;
+      replacement: string;
+    }
+  ) => void;
   incomingOp: RopeOperation[];
   id: string;
 };
@@ -37,11 +45,95 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
   const lastTextRef = useRef<string>(""); // Keep last known value
   const cursorRef = useRef<number>(0); // Keep cursor position
   const lineNumRef = useRef<HTMLDivElement>(null);
+  const skipNextEffect = useRef(false);
   const [numLines, setNumLines] = useState(1);
 
   const updateLines = (codecontent: string) => {
     const newLines = codecontent.split("\n").length;
     setNumLines(newLines);
+  };
+
+  // Used to handle tabbing
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      let newValue: string;
+      let updatedStart = start;
+      let updatedEnd = end;
+
+      console.log(`Start: ${start}`);
+      console.log(`end: ${end}`);
+      console.log(`updatedStart: ${updatedStart}`);
+      console.log(`updatedEnd: ${updatedEnd}`);
+
+      let replacement = "    ";
+
+      if (start === end) {
+        // Single tab insert
+        newValue = curText.slice(0, start) + "    " + curText.slice(end);
+        updatedStart = updatedEnd = start + replacement.length;
+        skipNextEffect.current = true;
+        setText(newValue, {
+          force: true,
+          start: start,
+          end: end,
+          replacement,
+        });
+      } else {
+        // Multi-line tab
+        const fullText = curText;
+        const lineStart = fullText.lastIndexOf("\n", start - 1) + 1;
+        const before = fullText.slice(0, lineStart);
+        const selected = fullText.slice(lineStart, end);
+        const after = fullText.slice(end);
+
+        const lines = selected.split("\n");
+        const tabbed = lines.map((line) => replacement + line).join("\n");
+
+        newValue = before + tabbed + after;
+        // Keep entire block selected
+        updatedStart = lineStart;
+        updatedEnd = lineStart + tabbed.length;
+
+        // Debug Comments
+        /*
+        console.log(`fullText: ${fullText}`);
+        console.log(`lineStart: ${lineStart}`);
+        console.log(`before: ${before}`);
+        console.log(`selected: ${selected}`);
+        console.log(`after: ${after}`);
+        console.log(`lines: ${lines}`);
+        console.log(`tabbed: ${tabbed}`);
+        console.log(`newValue: ${newValue}`);
+        console.log(`updatedStart: ${updatedStart}`);
+        console.log(`updatedEnd: ${updatedEnd}`);
+        */
+        skipNextEffect.current = true;
+        setText(newValue, {
+          force: true,
+          start: start,
+          end: end,
+          replacement: tabbed,
+        });
+      }
+
+      // Update state
+      textarea.value = newValue;
+      lastTextRef.current = newValue;
+      updateLines(newValue);
+
+      // Restore cursor after React updates
+      requestAnimationFrame(() => {
+        if (!textareaRef.current) return;
+        textareaRef.current.selectionStart = updatedStart;
+        textareaRef.current.selectionEnd = updatedEnd;
+      });
+    }
   };
 
   // Used to handle user-inputted changes
@@ -50,6 +142,7 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
+    // Height/width adjustment for fitting in div
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
     textarea.style.width = "auto";
@@ -67,6 +160,7 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
     }
   };
 
+  // Used to sync scrolling of lineNum + code div
   const handleScroll = () => {
     if (!lineNumRef.current || !wrapperRef.current) return;
     lineNumRef.current.scrollTop = wrapperRef.current.scrollTop;
@@ -80,6 +174,10 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
 
     // Only update it if the text is different
     if (curText !== lastTextRef.current) {
+      if (skipNextEffect.current) {
+        skipNextEffect.current = false;
+        return;
+      }
       // Grab cursor, update text and restore cursor
       let currentCursor = textarea.selectionStart ?? 0;
       while (incomingOp.length > 0) {
@@ -122,6 +220,7 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
             id={id}
             ref={textareaRef}
             onInput={handleInput}
+            onKeyDown={handleKeyDown}
             placeholder="Enter your text here"
             className="textbox flex-1 font-fira min-h-[calc(100vh-25rem)] overflow-y-hidden custom-scroll"
             wrap="off"

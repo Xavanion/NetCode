@@ -36,7 +36,7 @@ function Code() {
   );
 
   return (
-    <div className="flex flex-col flex-1 md:max-h-screen p-[20px]">
+    <div className="flex flex-col flex-1 h-[calc(100vh-70px)] md:max-h-screen p-[20px]">
       <Toolbar reviewText={setReviewText} />
       <div className="flex flex-col md:flex-row w-full flex-1 md:min-h-0">
         {/* Input Box */}
