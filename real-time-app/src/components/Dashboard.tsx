@@ -1,5 +1,6 @@
 import RepoCard from "@/components/RepoCard";
 import FileCard from "@/components/FileCard";
+import ProjectActivityChart from "./ProjectActivityChart";
 import {
   Carousel,
   CarouselContent,
@@ -14,36 +15,41 @@ type Props = {
 
 export default function Dashboard({ user }: Props) {
   return (
-    <div className="p-4 font-fira flex flex-col md:flex-row w-full">
+    <div className="p-4 font-fira flex flex-col min-h-[calc(100vh-70px)] md:flex-row w-full">
       {/* Repos & Files */}
-      <div className="w-full mb-10">
-        <h1>Welcome Back, {user}!</h1>
-        <p className="text-3xl my-8">Your Repositories</p>
-        <div className="relative px-2">
-          <Carousel
-            className="w-full px-8 md:px-12"
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-          >
-            <CarouselContent className="-ml-4">
-              <CarouselItem className="md:basis-1/2 lg:basis-1/3 xl:basis-1/6 pl-8 md:pl-4">
-                <RepoCard
-                  name="netcode"
-                  descrip="Collaborative Code Editor"
-                  language="Go"
-                  date="2025-05-28"
-                />
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-light-panel border border-Cborder" />
-            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-light-panel border border-Cborder" />
-          </Carousel>
+      <div className="w-full flex flex-col justify-between mb-8">
+        {/* Repo List */}
+        <div>
+          <h1>Welcome Back, {user}!</h1>
+          <p className="text-3xl my-8">Your Repositories</p>
+          <div className="relative px-2 mx-4">
+            <Carousel
+              className="w-full px-8 md:px-12"
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
+              <CarouselContent className="-ml-4">
+                <CarouselItem className="md:basis-1/2 lg:basis-1/3 xl:basis-1/6 pl-8 md:pl-4">
+                  <RepoCard
+                    name="netcode"
+                    descrip="Collaborative Code Editor"
+                    language="Go"
+                    date="2025-05-28"
+                  />
+                </CarouselItem>
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-light-panel border border-Cborder" />
+              <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-light-panel border border-Cborder" />
+            </Carousel>
+          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <div>
+        {/* FIles & Dash */}
+        <div className="flex flex-col md:mx-4 md:flex-row gap-8">
+          {/* Favorite Files */}
+          <div className="mr-4">
             <p className="text-2xl mt-8">Favorites</p>
             <div className="flex flex-col gap-4 mt-6">
               <FileCard
@@ -58,25 +64,32 @@ export default function Dashboard({ user }: Props) {
               />
             </div>
           </div>
-          <div>
-            <p className="text-2xl mt-8">Recent Files</p>
-            <div className="flex flex-col gap-4 mt-6">
-              <FileCard
-                repo="netcode"
-                fileName="main.go"
-                date="2025-05-25 14:45"
-              />
-              <FileCard
-                repo="netcode"
-                fileName="main.go"
-                date="2025-05-25 14:45"
-              />
-              <FileCard
-                repo="netcode"
-                fileName="main.go"
-                date="2025-05-25 14:45"
-              />
+
+          {/* Recent Files */}
+          <div className="grid md:grid-cols-2 gap-12 w-3/4">
+            <div>
+              <p className="text-2xl mt-8">Recent Files</p>
+              <div className="flex flex-col gap-4 mt-6">
+                <FileCard
+                  repo="netcode"
+                  fileName="main.go"
+                  date="2025-05-25 14:45"
+                />
+                <FileCard
+                  repo="netcode"
+                  fileName="main.go"
+                  date="2025-05-25 14:45"
+                />
+                <FileCard
+                  repo="netcode"
+                  fileName="main.go"
+                  date="2025-05-25 14:45"
+                />
+              </div>
             </div>
+
+            {/* Mini-Dashboard */}
+            <ProjectActivityChart />
           </div>
         </div>
       </div>

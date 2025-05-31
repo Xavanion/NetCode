@@ -4,6 +4,7 @@ import codeIcon from "@/assets/code-file.svg";
 import settingsIcon from "@/assets/settings.svg";
 import Code from "@/pages/Code";
 import Settings from "@/pages/Settings";
+import Sidebar from "@/components/Sidebar";
 
 type Props = {
   currentSite: string;
@@ -43,6 +44,7 @@ export default function Workspace({ currentSite, setSite }: Props) {
           <img src={settingsIcon} className="mr-2" />
           <p className={textClass(currentSite === "settings")}>Settings</p>
         </div>
+        <Sidebar />
       </div>
       <div className="flex-1">
         {currentSite === "dash" && <Dashboard user="Barrett" />}

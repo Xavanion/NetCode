@@ -130,20 +130,16 @@ export function useRopes(): [
     }
   ) {
     if (forceTab?.force) {
-      //console.log(`New: ${newText}`);
       const before = rope.current.slice(0, forceTab.start);
       const after = rope.current.slice(forceTab.end);
       const middle = RopeSequence.from(Array.from(forceTab.replacement));
-      //console.log(`Before: ${ropeToString(before)}`);
-      //console.log(`After: ${ropeToString(after)}`);
-      //console.log(`Middle: ${ropeToString(middle)}`);
       rope.current = before.append(middle).append(after);
       const curText = ropeToString(rope.current);
       setText(curText);
       socket.current?.send(
         JSON.stringify({
           event: "text_update",
-          type: "insert", // or "replace", if you introduce a new op type
+          type: "insert", // Could do "replace" for new type later if needed
           pos: forceTab.start,
           value: forceTab.replacement,
           from: forceTab.start,

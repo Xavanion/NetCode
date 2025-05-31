@@ -66,10 +66,12 @@ function Textbox({ curText, setText, incomingOp, id }: Props) {
       let updatedStart = start;
       let updatedEnd = end;
 
+      /*
       console.log(`Start: ${start}`);
       console.log(`end: ${end}`);
       console.log(`updatedStart: ${updatedStart}`);
       console.log(`updatedEnd: ${updatedEnd}`);
+      */
 
       let replacement = "    ";
 
