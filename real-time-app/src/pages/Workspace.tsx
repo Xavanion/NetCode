@@ -22,7 +22,8 @@ export default function Workspace({ currentSite, setSite }: Props) {
 
   return (
     <div className="flex flex-row">
-      <div className="hidden md:flex flex-col pt-10 items-center gap-5 w-[230px] flex-shrink-0 border-r-2 border-r-Cborder mr-5 h-[calc(100vh-70px)]">
+      {/* Sidebar */}
+      <div className="hidden md:flex flex-col pt-10 items-center gap-5 w-[230px] flex-shrink-0 border-r-2 border-r-Cborder h-[calc(100vh-70px)]">
         <div
           className={buttonClass(currentSite === "dash")}
           onClick={() => setSite("dash")}
@@ -46,6 +47,14 @@ export default function Workspace({ currentSite, setSite }: Props) {
         </div>
         <Sidebar />
       </div>
+
+      {/* Expandable Area */}
+      <div className="w-2 relative cursor-col-resize">
+        <div className="absolute inset-y-0 left-1/2 w-2 -translate-x-1/2" />
+        <div className="relative w-1 h-full bg-Cborder" />
+      </div>
+
+      {/* Main Content */}
       <div className="flex-1">
         {currentSite === "dash" && <Dashboard user="Barrett" />}
         {currentSite === "code" && <Code />}
