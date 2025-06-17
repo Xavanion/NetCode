@@ -49,10 +49,12 @@ export default function Workspace({ currentSite, setSite }: Props) {
       </div>
 
       {/* Expandable Area */}
+      {/*
       <div className="w-2 relative cursor-col-resize">
         <div className="absolute inset-y-0 left-1/2 w-2 -translate-x-1/2" />
         <div className="relative w-1 h-full bg-Cborder" />
       </div>
+      */}
 
       {/* Main Content */}
       <div className="flex-1">
